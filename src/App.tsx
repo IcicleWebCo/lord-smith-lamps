@@ -36,6 +36,7 @@ const App: React.FC = () => {
           id: session.user.id,
           email: session.user.email!,
           name: session.user.user_metadata?.name || session.user.email!.split('@')[0],
+          created_at: session.user.created_at,
         });
       }
     };
@@ -50,6 +51,7 @@ const App: React.FC = () => {
             id: session.user.id,
             email: session.user.email!,
             name: session.user.user_metadata?.name || session.user.email!.split('@')[0],
+            created_at: session.user.created_at,
           });
         } else {
           setUser(null);

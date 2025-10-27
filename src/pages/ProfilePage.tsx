@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Shield } from 'lucide-react';
+import { User, Shield, Calendar } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useAdmin } from '../context/AdminContext';
 import { signOut } from '../lib/supabase';
@@ -15,9 +15,27 @@ const ProfilePage: React.FC = () => {
       setCurrentPage('home');
     } catch (error) {
       console.error('Error signing out:', error);
-      // Still clear the user state even if there's an error
       setUser(null);
       setCurrentPage('home');
+    }
+  };
+
+  const getMembershipDuration = () => {
+    if (!user?.created_at) return 'New member';
+
+    const createdDate = new Date(user.created_at);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - createdDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 30) {
+      return `${diffDays} ${diffDays === 1 ? 'day' : 'days'}`;
+    } else if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30);
+      return `${months} ${months === 1 ? 'month' : 'months'}`;
+    } else {
+      const years = Math.floor(diffDays / 365);
+      return `${years} ${years === 1 ? 'year' : 'years'}`;
     }
   };
 
@@ -48,24 +66,23 @@ const ProfilePage: React.FC = () => {
               <h3 className="text-xl font-bold text-parchment-50 mb-4">Account Information</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-parchment-300 mb-1">
+                  <label className="block text-sm font-medium text-parchment-300 mb-2">
                     Full Name
                   </label>
-                  <input
-                    type="text"
-                    value={user.name}
-                    className="w-full px-3 py-2 bg-walnut-700 border border-walnut-600 rounded-lg text-parchment-100 focus:outline-none focus:ring-2 focus:ring-ember-500"
-                  />
+                  <p className="text-lg text-parchment-50 font-medium">{user.name}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-parchment-300 mb-1">
+                  <label className="block text-sm font-medium text-parchment-300 mb-2">
                     Email Address
                   </label>
-                  <input
-                    type="email"
-                    value={user.email}
-                    className="w-full px-3 py-2 bg-walnut-700 border border-walnut-600 rounded-lg text-parchment-100 focus:outline-none focus:ring-2 focus:ring-ember-500"
-                  />
+                  <p className="text-lg text-parchment-50 font-medium">{user.email}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-parchment-300 mb-2 flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Member For
+                  </label>
+                  <p className="text-lg text-parchment-50 font-medium">{getMembershipDuration()}</p>
                 </div>
               </div>
             </div>
