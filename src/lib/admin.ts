@@ -423,7 +423,9 @@ export async function getOrders(): Promise<OrderWithDetails[]> {
         .from('shipping_addresses')
         .select('*')
         .eq('user_id', order.user_id)
-        .eq('is_default', true)
+        .order('is_default', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       return {
