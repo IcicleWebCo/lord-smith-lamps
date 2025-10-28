@@ -34,6 +34,32 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, isAdmin, onNavi
 
   return (
     <div className="space-y-6">
+
+      {isAdmin && (
+        <div className="bg-gradient-to-br from-gold-900 to-gold-950 rounded-xl p-6 border-2 border-gold-700">
+          <div className="flex items-start gap-4">
+            <div className="bg-gold-800 p-3 rounded-lg">
+              <Shield className="h-6 w-6 text-gold-400" />
+            </div>
+            <div className="flex-1">
+              <h4 className="text-lg font-bold text-parchment-50 mb-2 font-display">
+                Administrator Access
+              </h4>
+              <p className="text-parchment-300 text-sm mb-4">
+                You have elevated privileges to manage products, orders, and site content.
+              </p>
+              <button
+                onClick={onNavigateToAdmin}
+                className="px-6 py-2.5 bg-gradient-to-r from-gold-600 to-gold-500 text-parchment-50 rounded-lg font-semibold hover:from-gold-700 hover:to-gold-600 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+              >
+                <Shield className="h-4 w-4" />
+                Go to Admin Panel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-walnut-800 rounded-xl p-6 border-2 border-walnut-700">
         <h3 className="text-xl font-bold text-parchment-50 mb-6 font-display flex items-center gap-2">
           <User className="h-5 w-5 text-ember-400" />
@@ -72,31 +98,6 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, isAdmin, onNavi
           </div>
         </div>
       </div>
-
-      {isAdmin && (
-        <div className="bg-gradient-to-br from-gold-900 to-gold-950 rounded-xl p-6 border-2 border-gold-700">
-          <div className="flex items-start gap-4">
-            <div className="bg-gold-800 p-3 rounded-lg">
-              <Shield className="h-6 w-6 text-gold-400" />
-            </div>
-            <div className="flex-1">
-              <h4 className="text-lg font-bold text-parchment-50 mb-2 font-display">
-                Administrator Access
-              </h4>
-              <p className="text-parchment-300 text-sm mb-4">
-                You have elevated privileges to manage products, orders, and site content.
-              </p>
-              <button
-                onClick={onNavigateToAdmin}
-                className="px-6 py-2.5 bg-gradient-to-r from-gold-600 to-gold-500 text-parchment-50 rounded-lg font-semibold hover:from-gold-700 hover:to-gold-600 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
-              >
-                <Shield className="h-4 w-4" />
-                Go to Admin Panel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
