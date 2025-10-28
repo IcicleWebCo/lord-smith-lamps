@@ -127,6 +127,24 @@ Deno.serve(async (req: Request) => {
       };
     });
 
+    const subtotal = cart_items.reduce((total: number, item: CartItem) => {
+      const product = productMap.get(item.product_id);
+      return total + (product ? product.price * item.quantity : 0);
+    }, 0);
+
+    const taxAmount = Math.round(subtotal * 0.095 * 100);
+
+    lineItems.push({
+      price_data: {
+        currency: "usd",
+        product_data: {
+          name: "Sales Tax (9.5%)",
+        },
+        unit_amount: taxAmount,
+      },
+      quantity: 1,
+    });
+
     const appUrl = Deno.env.get("VITE_APP_URL") || "http://localhost:5173";
 
     const cartItemsJson = JSON.stringify(

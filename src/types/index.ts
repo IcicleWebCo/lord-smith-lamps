@@ -58,6 +58,8 @@ export interface AppContextType {
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
   setRedirectAfterAuth: (page: string | null) => void;
+  getSubtotal: () => number;
+  getTaxAmount: () => number;
   getTotalPrice: () => number;
   getTotalItems: () => number;
 }

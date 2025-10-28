@@ -121,8 +121,16 @@ const App: React.FC = () => {
     );
   };
 
-  const getTotalPrice = () => {
+  const getSubtotal = () => {
     return cart.reduce((total, item) => total + (item.price * item.cartQuantity), 0);
+  };
+
+  const getTaxAmount = () => {
+    return getSubtotal() * 0.095;
+  };
+
+  const getTotalPrice = () => {
+    return getSubtotal() + getTaxAmount();
   };
 
   const getTotalItems = () => {
@@ -157,6 +165,8 @@ const App: React.FC = () => {
     setSearchQuery,
     setSelectedCategory,
     setRedirectAfterAuth,
+    getSubtotal,
+    getTaxAmount,
     getTotalPrice,
     getTotalItems,
   };

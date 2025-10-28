@@ -10,7 +10,7 @@ interface ProductImage {
 }
 
 const CartPage: React.FC = () => {
-  const { cart, updateQuantity, removeFromCart, getTotalPrice, setCurrentPage, setRedirectAfterAuth } = useApp();
+  const { cart, updateQuantity, removeFromCart, getSubtotal, getTaxAmount, getTotalPrice, setCurrentPage, setRedirectAfterAuth } = useApp();
   const [productImages, setProductImages] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -190,11 +190,25 @@ const CartPage: React.FC = () => {
           </div>
 
           <div className="border-t border-walnut-700 mt-8 pt-8">
-            <div className="flex justify-between items-center mb-6">
-              <span className="text-xl font-semibold text-parchment-50">Total:</span>
-              <span className="text-2xl font-bold text-ember-400">
-                ${getTotalPrice().toFixed(2)}
-              </span>
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between items-center">
+                <span className="text-parchment-300">Subtotal:</span>
+                <span className="text-parchment-50 font-medium">
+                  ${getSubtotal().toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-parchment-300">Sales Tax (9.5%):</span>
+                <span className="text-parchment-50 font-medium">
+                  ${getTaxAmount().toFixed(2)}
+                </span>
+              </div>
+              <div className="border-t border-walnut-700 pt-3 flex justify-between items-center">
+                <span className="text-xl font-semibold text-parchment-50">Total:</span>
+                <span className="text-2xl font-bold text-ember-400">
+                  ${getTotalPrice().toFixed(2)}
+                </span>
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
