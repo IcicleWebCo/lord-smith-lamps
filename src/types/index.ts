@@ -39,6 +39,23 @@ export interface User {
   created_at?: string;
 }
 
+export interface ShippingAddress {
+  id: string;
+  user_id: string;
+  full_name: string;
+  address_line1: string;
+  address_line2?: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+  phone?: string;
+  special_instructions?: string;
+  is_default: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface AppContextType {
   user: User | null;
   cart: CartItem[];

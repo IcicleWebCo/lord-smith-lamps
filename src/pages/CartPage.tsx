@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, Trash2, MapPin } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { supabase } from '../lib/supabase';
 import AuthModal from '../components/AuthModal';
+import { ShippingAddress } from '../types';
 
 interface ProductImage {
   product_id: string;
@@ -14,10 +15,48 @@ const CartPage: React.FC = () => {
   const [productImages, setProductImages] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [shippingAddresses, setShippingAddresses] = useState<ShippingAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [addressForm, setAddressForm] = useState({
+    full_name: '',
+    address_line1: '',
+    address_line2: '',
+    city: '',
+    state: '',
+    postal_code: '',
+    country: 'US',
+    phone: '',
+    special_instructions: '',
+    is_default: false,
+  });
 
   useEffect(() => {
     loadDefaultImages();
+    loadShippingAddresses();
   }, [cart]);
+
+  const loadShippingAddresses = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const { data, error } = await supabase
+      .from('shipping_addresses')
+      .select('*')
+      .order('is_default', { ascending: false })
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error loading shipping addresses:', error);
+      return;
+    }
+
+    setShippingAddresses(data || []);
+    const defaultAddress = data?.find(addr => addr.is_default);
+    if (defaultAddress) {
+      setSelectedAddressId(defaultAddress.id);
+    }
+  };
 
   const loadDefaultImages = async () => {
     if (cart.length === 0) return;
@@ -45,11 +84,59 @@ const CartPage: React.FC = () => {
     return productImages[productId] || fallbackUrl;
   };
 
+  const handleSaveAddress = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    if (addressForm.is_default) {
+      await supabase
+        .from('shipping_addresses')
+        .update({ is_default: false })
+        .eq('user_id', session.user.id);
+    }
+
+    const { data, error } = await supabase
+      .from('shipping_addresses')
+      .insert([{
+        ...addressForm,
+        user_id: session.user.id,
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error saving address:', error);
+      alert('Failed to save address. Please try again.');
+      return;
+    }
+
+    setShippingAddresses([data, ...shippingAddresses]);
+    setSelectedAddressId(data.id);
+    setShowAddressForm(false);
+    setAddressForm({
+      full_name: '',
+      address_line1: '',
+      address_line2: '',
+      city: '',
+      state: '',
+      postal_code: '',
+      country: 'US',
+      phone: '',
+      special_instructions: '',
+      is_default: false,
+    });
+  };
+
   const handleCheckout = async () => {
     const { data: { session } } = await supabase.auth.getSession();
 
     if (!session) {
       setShowAuthModal(true);
+      return;
+    }
+
+    if (!selectedAddressId) {
+      alert('Please select or add a shipping address before checkout.');
       return;
     }
 
@@ -62,7 +149,10 @@ const CartPage: React.FC = () => {
       }));
 
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { cart_items: cartItems },
+        body: {
+          cart_items: cartItems,
+          shipping_address_id: selectedAddressId,
+        },
       });
 
       if (error) {
@@ -126,9 +216,11 @@ const CartPage: React.FC = () => {
             Shopping Cart
           </h1>
 
-          <div className="bg-walnut-900 rounded-xl p-6">
-            <div className="space-y-6">
-            {cart.map((item) => (
+          <div className="space-y-6">
+            <div className="bg-walnut-900 rounded-xl p-6">
+              <h2 className="text-xl font-semibold text-parchment-50 mb-4">Cart Items</h2>
+              <div className="space-y-4">
+              {cart.map((item) => (
               <div key={item.id} className="flex items-center space-x-4 p-4 bg-walnut-800 rounded-lg">
                 <img
                   src={getProductImage(item.id, item.image_url)}
@@ -191,11 +283,216 @@ const CartPage: React.FC = () => {
                   <Trash2 className="h-5 w-5" />
                 </button>
               </div>
-            ))}
-          </div>
+              ))}
+              </div>
+            </div>
 
-          <div className="border-t border-walnut-700 mt-8 pt-8">
-            <div className="space-y-3 mb-6">
+            <div className="bg-walnut-900 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-ember-400" />
+                  <h2 className="text-xl font-semibold text-parchment-50">Shipping Address</h2>
+                </div>
+                <button
+                  onClick={() => setShowAddressForm(!showAddressForm)}
+                  className="text-ember-400 hover:text-ember-300 text-sm font-medium"
+                >
+                  {showAddressForm ? 'Cancel' : '+ Add New Address'}
+                </button>
+              </div>
+
+              {showAddressForm && (
+                <div className="mb-6 p-4 bg-walnut-800 rounded-lg space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-parchment-300 mb-1">
+                        Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={addressForm.full_name}
+                        onChange={(e) => setAddressForm({ ...addressForm, full_name: e.target.value })}
+                        className="w-full px-3 py-2 bg-walnut-700 border border-walnut-600 rounded-lg text-parchment-50 focus:outline-none focus:ring-2 focus:ring-ember-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-parchment-300 mb-1">
+                        Phone
+                      </label>
+                      <input
+                        type="tel"
+                        value={addressForm.phone}
+                        onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })}
+                        className="w-full px-3 py-2 bg-walnut-700 border border-walnut-600 rounded-lg text-parchment-50 focus:outline-none focus:ring-2 focus:ring-ember-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-parchment-300 mb-1">
+                      Address Line 1 *
+                    </label>
+                    <input
+                      type="text"
+                      value={addressForm.address_line1}
+                      onChange={(e) => setAddressForm({ ...addressForm, address_line1: e.target.value })}
+                      className="w-full px-3 py-2 bg-walnut-700 border border-walnut-600 rounded-lg text-parchment-50 focus:outline-none focus:ring-2 focus:ring-ember-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-parchment-300 mb-1">
+                      Address Line 2
+                    </label>
+                    <input
+                      type="text"
+                      value={addressForm.address_line2}
+                      onChange={(e) => setAddressForm({ ...addressForm, address_line2: e.target.value })}
+                      className="w-full px-3 py-2 bg-walnut-700 border border-walnut-600 rounded-lg text-parchment-50 focus:outline-none focus:ring-2 focus:ring-ember-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-parchment-300 mb-1">
+                        City *
+                      </label>
+                      <input
+                        type="text"
+                        value={addressForm.city}
+                        onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })}
+                        className="w-full px-3 py-2 bg-walnut-700 border border-walnut-600 rounded-lg text-parchment-50 focus:outline-none focus:ring-2 focus:ring-ember-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-parchment-300 mb-1">
+                        State *
+                      </label>
+                      <input
+                        type="text"
+                        value={addressForm.state}
+                        onChange={(e) => setAddressForm({ ...addressForm, state: e.target.value })}
+                        className="w-full px-3 py-2 bg-walnut-700 border border-walnut-600 rounded-lg text-parchment-50 focus:outline-none focus:ring-2 focus:ring-ember-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-parchment-300 mb-1">
+                        Postal Code *
+                      </label>
+                      <input
+                        type="text"
+                        value={addressForm.postal_code}
+                        onChange={(e) => setAddressForm({ ...addressForm, postal_code: e.target.value })}
+                        className="w-full px-3 py-2 bg-walnut-700 border border-walnut-600 rounded-lg text-parchment-50 focus:outline-none focus:ring-2 focus:ring-ember-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-parchment-300 mb-1">
+                      Special Delivery Instructions
+                    </label>
+                    <textarea
+                      value={addressForm.special_instructions}
+                      onChange={(e) => setAddressForm({ ...addressForm, special_instructions: e.target.value })}
+                      rows={3}
+                      className="w-full px-3 py-2 bg-walnut-700 border border-walnut-600 rounded-lg text-parchment-50 focus:outline-none focus:ring-2 focus:ring-ember-500 resize-none"
+                      placeholder="e.g., Leave package at side door, Ring doorbell twice, etc."
+                    />
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="is_default"
+                      checked={addressForm.is_default}
+                      onChange={(e) => setAddressForm({ ...addressForm, is_default: e.target.checked })}
+                      className="h-4 w-4 text-ember-500 focus:ring-ember-500 border-walnut-600 rounded bg-walnut-700"
+                    />
+                    <label htmlFor="is_default" className="ml-2 text-sm text-parchment-300">
+                      Set as default address
+                    </label>
+                  </div>
+
+                  <button
+                    onClick={handleSaveAddress}
+                    disabled={!addressForm.full_name || !addressForm.address_line1 || !addressForm.city || !addressForm.state || !addressForm.postal_code}
+                    className="w-full py-2 bg-gradient-to-r from-ember-600 to-ember-500 text-parchment-50 rounded-lg font-semibold hover:from-ember-700 hover:to-ember-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Save Address
+                  </button>
+                </div>
+              )}
+
+              {shippingAddresses.length > 0 ? (
+                <div className="space-y-3">
+                  {shippingAddresses.map((address) => (
+                    <div
+                      key={address.id}
+                      onClick={() => setSelectedAddressId(address.id)}
+                      className={`p-4 border rounded-lg cursor-pointer transition-all duration-300 ${
+                        selectedAddressId === address.id
+                          ? 'border-ember-500 bg-walnut-800'
+                          : 'border-walnut-700 bg-walnut-800/50 hover:bg-walnut-800'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold text-parchment-50">{address.full_name}</h3>
+                            {address.is_default && (
+                              <span className="text-xs px-2 py-0.5 bg-ember-600 text-parchment-50 rounded">
+                                Default
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-parchment-300">{address.address_line1}</p>
+                          {address.address_line2 && (
+                            <p className="text-sm text-parchment-300">{address.address_line2}</p>
+                          )}
+                          <p className="text-sm text-parchment-300">
+                            {address.city}, {address.state} {address.postal_code}
+                          </p>
+                          {address.phone && (
+                            <p className="text-sm text-parchment-300 mt-1">Phone: {address.phone}</p>
+                          )}
+                          {address.special_instructions && (
+                            <p className="text-sm text-ember-400 mt-2 italic">
+                              Note: {address.special_instructions}
+                            </p>
+                          )}
+                        </div>
+                        <input
+                          type="radio"
+                          checked={selectedAddressId === address.id}
+                          onChange={() => setSelectedAddressId(address.id)}
+                          className="h-5 w-5 text-ember-500 focus:ring-ember-500 border-walnut-600"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : !showAddressForm && (
+                <div className="text-center py-8">
+                  <p className="text-parchment-400 mb-4">No shipping addresses saved</p>
+                  <button
+                    onClick={() => setShowAddressForm(true)}
+                    className="text-ember-400 hover:text-ember-300 font-medium"
+                  >
+                    Add your first address
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="bg-walnut-900 rounded-xl p-6">
+              <h2 className="text-xl font-semibold text-parchment-50 mb-4">Order Summary</h2>
+              <div className="space-y-3 mb-6">
               <div className="flex justify-between items-center">
                 <span className="text-parchment-300">Subtotal:</span>
                 <span className="text-parchment-50 font-medium">
@@ -232,7 +529,7 @@ const CartPage: React.FC = () => {
               
               <button
                 onClick={handleCheckout}
-                disabled={loading}
+                disabled={loading || !selectedAddressId}
                 className="flex-1 py-3 bg-gradient-to-r from-forge-600 to-forge-500 text-parchment-50 rounded-lg font-semibold hover:from-forge-700 hover:to-forge-600 transition-all duration-300 shadow-forge disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Processing...' : 'Proceed to Checkout'}
