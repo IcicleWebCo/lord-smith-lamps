@@ -95,14 +95,6 @@ const SuccessPage: React.FC = () => {
             </div>
           )}
 
-          {sessionId && (
-            <div className="bg-walnut-800/50 rounded-lg p-4 mb-8">
-              <p className="text-parchment-400 text-sm">
-                Session ID: <span className="text-parchment-300 font-mono">{sessionId.slice(0, 24)}...</span>
-              </p>
-            </div>
-          )}
-
           <div className="space-y-4">
             <p className="text-parchment-400 text-sm">
               A confirmation email has been sent to your email address.
