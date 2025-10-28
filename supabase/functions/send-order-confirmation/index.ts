@@ -137,7 +137,19 @@ Deno.serve(async (req: Request) => {
                           </thead>
                           <tbody style="color: #e7dcc8; font-size: 14px;">
                             ${itemsHtml}
+                            <tr style="border-top: 2px solid #4a3728;">
+                              <td colspan="3" style="padding: 12px; text-align: right; color: #d4c5b0;">Subtotal:</td>
+                              <td style="padding: 12px; text-align: right; color: #e7dcc8;">$${items.reduce((sum, item) => sum + parseFloat(item.subtotal.toString()), 0).toFixed(2)}</td>
+                            </tr>
                             <tr>
+                              <td colspan="3" style="padding: 12px; text-align: right; color: #d4c5b0;">Shipping:</td>
+                              <td style="padding: 12px; text-align: right; color: #e7dcc8;">$${items.reduce((sum, item) => sum + parseFloat(item.subtotal.toString()), 0) === 0 ? '0.00' : (items.reduce((sum, item) => sum + parseFloat(item.subtotal.toString()), 0) * 0.1).toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                              <td colspan="3" style="padding: 12px; text-align: right; color: #d4c5b0;">Tax (9.5%):</td>
+                              <td style="padding: 12px; text-align: right; color: #e7dcc8;">$${(items.reduce((sum, item) => sum + parseFloat(item.subtotal.toString()), 0) * 0.095).toFixed(2)}</td>
+                            </tr>
+                            <tr style="border-top: 2px solid #4a3728;">
                               <td colspan="3" style="padding: 20px 12px 12px 12px; text-align: right; font-weight: bold; color: #fbbf24; font-size: 16px;">Total:</td>
                               <td style="padding: 20px 12px 12px 12px; text-align: right; font-weight: bold; color: #fbbf24; font-size: 18px;">$${parseFloat(order.total_amount).toFixed(2)}</td>
                             </tr>
