@@ -11,6 +11,7 @@ export interface Product {
   name: string;
   price: number;
   original_price?: number;
+  shipping_price: number;
   description: string;
   image_url: string;
   category_id: string;
@@ -59,6 +60,7 @@ export interface AppContextType {
   setSelectedCategory: (category: string) => void;
   setRedirectAfterAuth: (page: string | null) => void;
   getSubtotal: () => number;
+  getShippingTotal: () => number;
   getTaxAmount: () => number;
   getTotalPrice: () => number;
   getTotalItems: () => number;

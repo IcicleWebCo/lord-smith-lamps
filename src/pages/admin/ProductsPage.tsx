@@ -13,6 +13,7 @@ const ProductsPage: React.FC = () => {
     description: '',
     price: 0,
     original_price: null,
+    shipping_price: 0,
     image_url: '',
     category_id: null,
     rating: 0,
@@ -25,6 +26,7 @@ const ProductsPage: React.FC = () => {
   });
   const [priceInput, setPriceInput] = useState('');
   const [originalPriceInput, setOriginalPriceInput] = useState('');
+  const [shippingPriceInput, setShippingPriceInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [uploadingImages, setUploadingImages] = useState<{ [key: string]: boolean }>({});
   const [productImages, setProductImages] = useState<{ [key: string]: ProductImage[] }>({});
@@ -33,6 +35,7 @@ const ProductsPage: React.FC = () => {
   const [draggedOverImage, setDraggedOverImage] = useState<string | null>(null);
   const [editPriceInputs, setEditPriceInputs] = useState<{ [key: string]: string }>({});
   const [editOriginalPriceInputs, setEditOriginalPriceInputs] = useState<{ [key: string]: string }>({});
+  const [editShippingPriceInputs, setEditShippingPriceInputs] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     loadData();
@@ -225,6 +228,7 @@ const ProductsPage: React.FC = () => {
       description: '',
       price: 0,
       original_price: null,
+      shipping_price: 0,
       image_url: '',
       category_id: null,
       rating: 0,
@@ -237,6 +241,7 @@ const ProductsPage: React.FC = () => {
     });
     setPriceInput('');
     setOriginalPriceInput('');
+    setShippingPriceInput('');
   };
 
   const getCategoryName = (categoryId: string | null) => {
@@ -328,6 +333,22 @@ const ProductsPage: React.FC = () => {
                   if (value === '' || /^\d*\.?\d*$/.test(value)) {
                     setOriginalPriceInput(value);
                     setFormData({ ...formData, original_price: value === '' ? null : parseFloat(value) || null });
+                  }
+                }}
+                className="w-full px-4 py-2 bg-walnut-800 border border-walnut-700 rounded-lg text-parchment-100 focus:outline-none focus:ring-2 focus:ring-forge-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-parchment-300 mb-2">Shipping Price *</label>
+              <input
+                type="text"
+                inputMode="decimal"
+                value={shippingPriceInput}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                    setShippingPriceInput(value);
+                    setFormData({ ...formData, shipping_price: value === '' ? 0 : parseFloat(value) || 0 });
                   }
                 }}
                 className="w-full px-4 py-2 bg-walnut-800 border border-walnut-700 rounded-lg text-parchment-100 focus:outline-none focus:ring-2 focus:ring-forge-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -444,7 +465,7 @@ const ProductsPage: React.FC = () => {
                         rows={2}
                         placeholder="Description"
                       />
-                      <div className="grid grid-cols-4 gap-3">
+                      <div className="grid grid-cols-5 gap-3">
                         <div>
                           <label className="block text-xs text-parchment-400 mb-1">Price</label>
                           <input
@@ -472,6 +493,22 @@ const ProductsPage: React.FC = () => {
                               if (value === '' || /^\d*\.?\d*$/.test(value)) {
                                 setEditOriginalPriceInputs(prev => ({ ...prev, [product.id]: value }));
                                 updateProductField(product.id, 'original_price', value === '' ? null : parseFloat(value) || null);
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-walnut-800 border border-walnut-700 rounded text-parchment-100 focus:outline-none focus:ring-2 focus:ring-forge-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-parchment-400 mb-1">Shipping</label>
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            value={editShippingPriceInputs[product.id] ?? (product.shipping_price || 0)}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                                setEditShippingPriceInputs(prev => ({ ...prev, [product.id]: value }));
+                                updateProductField(product.id, 'shipping_price', value === '' ? 0 : parseFloat(value) || 0);
                               }
                             }}
                             className="w-full px-3 py-2 bg-walnut-800 border border-walnut-700 rounded text-parchment-100 focus:outline-none focus:ring-2 focus:ring-forge-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -561,6 +598,7 @@ const ProductsPage: React.FC = () => {
                         {product.original_price && (
                           <div className="text-parchment-400 line-through">${product.original_price.toFixed(2)}</div>
                         )}
+                        <div className="text-parchment-300">+ ${product.shipping_price?.toFixed(2) || '0.00'} shipping</div>
                         <div className="flex items-center gap-1 text-parchment-300">
                           <Package className="h-4 w-4" />
                           <span>{product.quantity} in stock</span>
@@ -593,6 +631,11 @@ const ProductsPage: React.FC = () => {
                             delete newState[product.id];
                             return newState;
                           });
+                          setEditShippingPriceInputs(prev => {
+                            const newState = { ...prev };
+                            delete newState[product.id];
+                            return newState;
+                          });
                           loadData();
                         }}
                         className="p-2 text-parchment-400 hover:bg-walnut-800 rounded transition-colors"
@@ -615,6 +658,7 @@ const ProductsPage: React.FC = () => {
                           setEditingId(product.id);
                           setEditPriceInputs(prev => ({ ...prev, [product.id]: String(product.price) }));
                           setEditOriginalPriceInputs(prev => ({ ...prev, [product.id]: product.original_price ? String(product.original_price) : '' }));
+                          setEditShippingPriceInputs(prev => ({ ...prev, [product.id]: String(product.shipping_price || 0) }));
                         }}
                         className="p-2 text-parchment-300 hover:bg-walnut-800 rounded transition-colors"
                         title="Edit"

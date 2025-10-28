@@ -10,7 +10,7 @@ interface ProductImage {
 }
 
 const CartPage: React.FC = () => {
-  const { cart, updateQuantity, removeFromCart, getSubtotal, getTaxAmount, getTotalPrice, setCurrentPage, setRedirectAfterAuth } = useApp();
+  const { cart, updateQuantity, removeFromCart, getSubtotal, getShippingTotal, getTaxAmount, getTotalPrice, setCurrentPage, setRedirectAfterAuth } = useApp();
   const [productImages, setProductImages] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -139,7 +139,12 @@ const CartPage: React.FC = () => {
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-parchment-50">{item.name}</h3>
                   <p className="text-parchment-300 text-sm">{item.category_name || 'Uncategorized'}</p>
-                  <p className="text-ember-400 font-bold">${item.price.toFixed(2)}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-ember-400 font-bold">${item.price.toFixed(2)}</p>
+                    {item.shipping_price > 0 && (
+                      <p className="text-parchment-400 text-sm">+ ${item.shipping_price.toFixed(2)} shipping</p>
+                    )}
+                  </div>
                   {item.cartQuantity > item.quantity && (
                     <p className="text-forge-400 text-xs mt-1">Only {item.quantity} available</p>
                   )}
@@ -195,6 +200,12 @@ const CartPage: React.FC = () => {
                 <span className="text-parchment-300">Subtotal:</span>
                 <span className="text-parchment-50 font-medium">
                   ${getSubtotal().toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-parchment-300">Shipping:</span>
+                <span className="text-parchment-50 font-medium">
+                  ${getShippingTotal().toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
