@@ -172,19 +172,6 @@ const ProfilePage: React.FC = () => {
 
               <nav className="p-2">
                 <button
-                  onClick={() => setActiveTab('orders')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-300 mb-1 ${
-                    activeTab === 'orders'
-                      ? 'bg-gradient-to-r from-forge-600 to-forge-500 text-parchment-50 shadow-forge'
-                      : 'text-parchment-300 hover:bg-walnut-800 hover:text-parchment-50'
-                  }`}
-                >
-                  <ShoppingBag className="h-5 w-5" />
-                  <span>My Orders</span>
-                  {activeTab === 'orders' && <ArrowRight className="h-4 w-4 ml-auto" />}
-                </button>
-
-                <button
                   onClick={() => setActiveTab('settings')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-300 mb-1 ${
                     activeTab === 'settings'
@@ -195,6 +182,18 @@ const ProfilePage: React.FC = () => {
                   <Settings className="h-5 w-5" />
                   <span>Account Settings</span>
                   {activeTab === 'settings' && <ArrowRight className="h-4 w-4 ml-auto" />}
+                </button>
+                <button
+                  onClick={() => setActiveTab('orders')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-300 mb-1 ${
+                    activeTab === 'orders'
+                      ? 'bg-gradient-to-r from-forge-600 to-forge-500 text-parchment-50 shadow-forge'
+                      : 'text-parchment-300 hover:bg-walnut-800 hover:text-parchment-50'
+                  }`}
+                >
+                  <ShoppingBag className="h-5 w-5" />
+                  <span>My Orders</span>
+                  {activeTab === 'orders' && <ArrowRight className="h-4 w-4 ml-auto" />}
                 </button>
               </nav>
 
