@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { User, CheckCircle, AlertCircle } from 'lucide-react';
+import { User, CheckCircle, AlertCircle, Flame } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { signUp, signIn } from '../lib/supabase';
+import OptimizedImage from '../components/OptimizedImage';
 
 const AuthPage: React.FC = () => {
-  const { setUser, setCurrentPage } = useApp();
+  const { setUser, setCurrentPage, redirectAfterAuth, setRedirectAfterAuth } = useApp();
   const [isLogin, setIsLogin] = useState(true);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -53,9 +54,11 @@ const AuthPage: React.FC = () => {
           setStatus('success');
           setMessage('Successfully signed in!');
 
-          // Redirect to profile page after successful login
+          // Redirect to the stored page or default to profile
           setTimeout(() => {
-            setCurrentPage('profile');
+            const targetPage = redirectAfterAuth || 'profile';
+            setRedirectAfterAuth(null);
+            setCurrentPage(targetPage);
           }, 1500);
         }
       } else {
@@ -95,22 +98,43 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-soot-950 to-walnut-950 py-8 flex items-center justify-center">
-      <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="bg-walnut-900 rounded-xl p-8 shadow-craft">
+    <div className="min-h-screen bg-gradient-to-br from-soot-950 to-walnut-950 py-8 flex items-center justify-center relative overflow-hidden">
+      <OptimizedImage
+        src="https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg.png"
+        alt="Background texture"
+        className="absolute inset-0 w-full h-full object-cover opacity-5"
+        priority={false}
+      />
+
+      <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center mb-4">
+            <Flame className="h-12 w-12 text-forge-500 animate-flicker" />
+          </div>
+          <h1 className="text-4xl font-bold text-parchment-50 mb-2 font-display">
+            Lord Smith Lamps
+          </h1>
+          <p className="text-ember-400 font-medium tracking-wide text-sm">
+            HANDCRAFTED UPCYCLED LAMPS
+          </p>
+        </div>
+
+        <div className="bg-walnut-900 rounded-xl p-8 shadow-craft border border-walnut-800">
           <div className="text-center mb-8">
-            <div className="relative bg-gradient-to-br from-forge-500 to-ember-600 p-3 rounded-lg mx-auto w-16 h-16 flex items-center justify-center mb-4 overflow-hidden">
-              <div 
-                className="absolute inset-0 bg-cover bg-center opacity-20"
-                style={{ backgroundImage: 'url(/bg.png)' }}
+            <div className="relative bg-gradient-to-br from-forge-500 to-ember-600 p-3 rounded-lg mx-auto w-16 h-16 flex items-center justify-center mb-4 overflow-hidden shadow-forge">
+              <OptimizedImage
+                src="https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg.png"
+                alt="Pattern"
+                className="absolute inset-0 w-full h-full object-cover opacity-20"
+                priority={false}
               />
               <User className="h-8 w-8 text-parchment-50 relative z-10" />
             </div>
             <h2 className="text-2xl font-bold text-parchment-50 font-display">
-              {isLogin ? 'Welcome Back' : 'Register'}
+              {isLogin ? 'Welcome Back' : 'Join Our Community'}
             </h2>
             <p className="text-parchment-300 mt-2">
-              {isLogin ? 'Sign in to your account' : 'Create your account'}
+              {isLogin ? 'Sign in to continue your journey' : 'Create your account to get started'}
             </p>
           </div>
 
@@ -196,14 +220,20 @@ const AuthPage: React.FC = () => {
             <button
               onClick={() => setIsLogin(!isLogin)}
               disabled={status === 'loading'}
-              className="text-ember-400 hover:text-ember-300 transition-colors duration-300"
+              className="text-ember-400 hover:text-ember-300 transition-colors duration-300 font-medium"
             >
-              {isLogin 
-                ? "Don't have an account? Sign up" 
+              {isLogin
+                ? "Don't have an account? Sign up"
                 : "Already have an account? Sign in"
               }
             </button>
           </div>
+        </div>
+
+        <div className="text-center mt-6">
+          <p className="text-parchment-400 text-sm">
+            Illuminate your space with handcrafted vintage treasures
+          </p>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Hammer } from 'lucide-react';
+import { Flame } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 const Footer: React.FC = () => {
@@ -10,13 +10,9 @@ const Footer: React.FC = () => {
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center mb-4">
-              <div className="relative bg-gradient-to-br from-forge-500 to-ember-600 p-2 rounded-lg mr-3 overflow-hidden">
-                <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-20"
-                  style={{ backgroundImage: 'url(/bg.png)' }}
-                />
-                <Hammer className="h-5 w-5 text-parchment-50 relative z-10" />
-              </div>
+
+              <Flame className="h-8 w-8 text-forge-500 mr-3 animate-flicker" />
+             
               <div>
                 <h3 className="text-lg font-bold text-parchment-50 font-display">
                   Lord Smith

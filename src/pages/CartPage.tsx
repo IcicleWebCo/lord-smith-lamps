@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { supabase } from '../lib/supabase';
+import AuthModal from '../components/AuthModal';
 
 interface ProductImage {
   product_id: string;
@@ -9,8 +10,10 @@ interface ProductImage {
 }
 
 const CartPage: React.FC = () => {
-  const { cart, updateQuantity, removeFromCart, getTotalPrice, setCurrentPage } = useApp();
+  const { cart, updateQuantity, removeFromCart, getTotalPrice, setCurrentPage, setRedirectAfterAuth } = useApp();
   const [productImages, setProductImages] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     loadDefaultImages();
@@ -42,9 +45,43 @@ const CartPage: React.FC = () => {
     return productImages[productId] || fallbackUrl;
   };
 
-  const handleCheckout = () => {
-    // Simulate Stripe checkout
-    alert('Redirecting to Stripe checkout...');
+  const handleCheckout = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const cartItems = cart.map(item => ({
+        product_id: item.id,
+        quantity: item.cartQuantity,
+      }));
+
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { cart_items: cartItems },
+      });
+
+      if (error) {
+        console.error('Checkout error:', error);
+        alert('Failed to create checkout session. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      alert('An error occurred. Please try again.');
+      setLoading(false);
+    }
   };
 
   if (cart.length === 0) {
@@ -72,14 +109,25 @@ const CartPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-soot-950 to-walnut-950 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-parchment-50 mb-8 font-display">
-          Shopping Cart
-        </h1>
+    <>
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSignIn={() => {
+          setShowAuthModal(false);
+          setRedirectAfterAuth('cart');
+          setCurrentPage('auth');
+        }}
+      />
 
-        <div className="bg-walnut-900 rounded-xl p-6">
-          <div className="space-y-6">
+      <div className="min-h-screen bg-gradient-to-br from-soot-950 to-walnut-950 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold text-parchment-50 mb-8 font-display">
+            Shopping Cart
+          </h1>
+
+          <div className="bg-walnut-900 rounded-xl p-6">
+            <div className="space-y-6">
             {cart.map((item) => (
               <div key={item.id} className="flex items-center space-x-4 p-4 bg-walnut-800 rounded-lg">
                 <img
@@ -159,15 +207,17 @@ const CartPage: React.FC = () => {
               
               <button
                 onClick={handleCheckout}
-                className="flex-1 py-3 bg-gradient-to-r from-forge-600 to-forge-500 text-parchment-50 rounded-lg font-semibold hover:from-forge-700 hover:to-forge-600 transition-all duration-300 shadow-forge"
+                disabled={loading}
+                className="flex-1 py-3 bg-gradient-to-r from-forge-600 to-forge-500 text-parchment-50 rounded-lg font-semibold hover:from-forge-700 hover:to-forge-600 transition-all duration-300 shadow-forge disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Proceed to Checkout
+                {loading ? 'Processing...' : 'Proceed to Checkout'}
               </button>
+            </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

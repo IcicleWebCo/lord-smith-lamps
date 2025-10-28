@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import ProductCard from './ProductCard';
 import { supabase } from '../lib/supabase';
 import { Product } from '../types';
+import OptimizedImage from './OptimizedImage';
 
 const FeaturedProductsSection: React.FC = () => {
   const { setCurrentPage } = useApp();
@@ -65,11 +66,11 @@ const FeaturedProductsSection: React.FC = () => {
 
   return (
     <section className="relative py-20 bg-soot-950">
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: 'url(/bg.png)'
-        }}
+      <OptimizedImage
+        src="https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg.png"
+        alt="Background texture"
+        className="absolute inset-0 w-full h-full object-cover"
+        priority={false}
       />
       <div className="absolute inset-0 bg-soot-950/95"></div>
 

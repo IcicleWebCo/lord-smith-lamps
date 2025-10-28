@@ -3,8 +3,9 @@ import {
   ShoppingCart,
   Menu,
   X,
-  Hammer,
-  User
+  User,
+  LampDesk,
+  Flame
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -26,13 +27,8 @@ const Header: React.FC = () => {
             className="flex items-center cursor-pointer group"
             onClick={() => setCurrentPage('home')}
           >
-            <div className="relative bg-gradient-to-br from-forge-500 to-ember-600 p-2 rounded-lg mr-3 group-hover:shadow-forge transition-all duration-300 overflow-hidden">
-              <div
-                className="absolute inset-0 bg-cover bg-center opacity-20"
-                style={{ backgroundImage: 'url(/bg.png)' }}
-              />
-              <Hammer className="h-6 w-6 text-parchment-50 relative z-10" />
-            </div>
+            <Flame className="h-8 w-8 text-forge-500 mr-3 animate-flicker" />
+      
             <div>
               <h1 className="text-xl font-bold text-parchment-50 font-display">
                 Lord Smith

@@ -1,5 +1,5 @@
 import React from 'react';
-import { 
+import {
   Flame,
   Hammer,
   TreePine,
@@ -7,6 +7,7 @@ import {
   Shield,
   Truck
 } from 'lucide-react';
+import OptimizedImage from '../components/OptimizedImage';
 
 const AboutPage: React.FC = () => {
   return (
@@ -16,7 +17,7 @@ const AboutPage: React.FC = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: 'url(/bg-workshop.png)',
+            backgroundImage: 'url(https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg-workshop.png)',
           }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-soot-950/90 to-walnut-950/80"></div>
@@ -35,9 +36,11 @@ const AboutPage: React.FC = () => {
       <section className="relative py-20 bg-walnut-900 overflow-hidden">
         {/* Decorative background element */}
         <div className="absolute inset-0 pointer-events-none">
-          <div 
-            className="absolute inset-0 w-full h-full bg-cover bg-center opacity-5"
-            style={{ backgroundImage: 'url(/bg.png)' }}
+          <OptimizedImage
+            src="https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg.png"
+            alt="Background texture"
+            className="absolute inset-0 w-full h-full object-cover opacity-5"
+            priority={false}
           />
         </div>
         
@@ -73,15 +76,17 @@ Over 500 lamps later, the original vision remains: to discover beautiful, discar
             </div>
             
             <div className="relative">
-              <img
-                src="/bg-store.jpg"
+              <OptimizedImage
+                src="https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg-store.jpg"
                 alt="Master craftsman at work"
                 className="rounded-xl shadow-craft"
+                priority={false}
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
               <div className="absolute -bottom-6 -right-6 bg-gradient-to-br from-forge-600 to-ember-700 p-4 rounded-xl overflow-hidden">
                 <div 
                   className="absolute inset-0 bg-cover bg-center opacity-20"
-                  style={{ backgroundImage: 'url(/bg.png)' }}
+                  style={{ backgroundImage: 'url(https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg.png)' }}
                 />
                 <Award className="h-8 w-8 text-parchment-50 relative z-10" />
               </div>
@@ -108,7 +113,7 @@ Over 500 lamps later, the original vision remains: to discover beautiful, discar
               <div className="relative bg-gradient-to-br from-timber-600 to-walnut-700 p-6 rounded-xl mb-6 mx-auto w-20 h-20 flex items-center justify-center overflow-hidden">
                 <div 
                   className="absolute inset-0 bg-cover bg-center opacity-20"
-                  style={{ backgroundImage: 'url(/bg.png)' }}
+                  style={{ backgroundImage: 'url(https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg.png)' }}
                 />
                 <TreePine className="h-10 w-10 text-parchment-50 relative z-10" />
               </div>
@@ -122,7 +127,7 @@ Over 500 lamps later, the original vision remains: to discover beautiful, discar
               <div className="relative bg-gradient-to-br from-forge-600 to-ember-700 p-6 rounded-xl mb-6 mx-auto w-20 h-20 flex items-center justify-center overflow-hidden">
                 <div 
                   className="absolute inset-0 bg-cover bg-center opacity-20"
-                  style={{ backgroundImage: 'url(/bg.png)' }}
+                  style={{ backgroundImage: 'url(https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg.png)' }}
                 />
                 <Hammer className="h-10 w-10 text-parchment-50 relative z-10" />
               </div>
@@ -136,7 +141,7 @@ Over 500 lamps later, the original vision remains: to discover beautiful, discar
               <div className="relative bg-gradient-to-br from-gold-600 to-copper-700 p-6 rounded-xl mb-6 mx-auto w-20 h-20 flex items-center justify-center overflow-hidden">
                 <div 
                   className="absolute inset-0 bg-cover bg-center opacity-20"
-                  style={{ backgroundImage: 'url(/bg.png)' }}
+                  style={{ backgroundImage: 'url(https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg.png)' }}
                 />
                 <Shield className="h-10 w-10 text-parchment-50 relative z-10" />
               </div>
@@ -150,7 +155,7 @@ Over 500 lamps later, the original vision remains: to discover beautiful, discar
               <div className="relative bg-gradient-to-br from-iron-600 to-anvil-700 p-6 rounded-xl mb-6 mx-auto w-20 h-20 flex items-center justify-center overflow-hidden">
                 <div 
                   className="absolute inset-0 bg-cover bg-center opacity-20"
-                  style={{ backgroundImage: 'url(/bg.png)' }}
+                  style={{ backgroundImage: 'url(https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg.png)' }}
                 />
                 <Truck className="h-10 w-10 text-parchment-50 relative z-10" />
               </div>

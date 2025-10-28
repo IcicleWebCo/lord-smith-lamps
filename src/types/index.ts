@@ -46,7 +46,9 @@ export interface AppContextType {
   isMenuOpen: boolean;
   searchQuery: string;
   selectedCategory: string;
+  redirectAfterAuth: string | null;
   setUser: (user: User | null) => void;
+  setCart: (cart: CartItem[]) => void;
   addToCart: (product: Product) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
@@ -55,6 +57,7 @@ export interface AppContextType {
   setIsMenuOpen: (isOpen: boolean) => void;
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
+  setRedirectAfterAuth: (page: string | null) => void;
   getTotalPrice: () => number;
   getTotalItems: () => number;
 }

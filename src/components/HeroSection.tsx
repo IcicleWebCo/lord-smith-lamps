@@ -1,23 +1,26 @@
 import React from 'react';
-import { ArrowRight, Flame } from 'lucide-react';
+import { ArrowRight, Hammer } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import OptimizedImage from './OptimizedImage';
 
 const HeroSection: React.FC = () => {
   const { setCurrentPage } = useApp();
 
   return (
-    <section className="relative overflow-hidden">
-      <div
-        className="relative min-h-screen bg-cover bg-center flex items-center"
-        style={{
-          backgroundImage: 'url(/bg-workshop.png)'
-        }}
-      >
-        <div className="absolute inset-0 bg-soot-950/60"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <section className="relative overflow-hidden min-h-screen flex items-center">
+      <OptimizedImage
+        src="https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg-workshop.png"
+        alt="Workshop background"
+        className="absolute inset-0 w-full h-full object-cover"
+        priority={true}
+        sizes="100vw"
+      />
+      <div className="absolute inset-0 bg-soot-950/60"></div>
+      <div className="relative w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="max-w-3xl">
             <div className="flex items-center mb-6">
-              <Flame className="h-8 w-8 text-forge-500 mr-3 animate-flicker" />
+              <Hammer className="h-8 w-8 text-forge-500 mr-3 animate-flicker" />
               <span className="text-ember-400 font-medium tracking-wide">HANDCRAFTED UPCYCLED LAMPS</span>
             </div>
 

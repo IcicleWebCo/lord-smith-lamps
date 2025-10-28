@@ -15,6 +15,8 @@ import ContactPage from './pages/ContactPage';
 import AdminPage from './pages/AdminPage';
 import CustomWorkPage from './pages/CustomWorkPage';
 import FAQPage from './pages/FAQPage';
+import SuccessPage from './pages/SuccessPage';
+import CancelPage from './pages/CancelPage';
 
 // Main App Component
 const App: React.FC = () => {
@@ -25,12 +27,13 @@ const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [redirectAfterAuth, setRedirectAfterAuth] = useState<string | null>(null);
 
   // Check for existing auth session on app load
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (session?.user) {
         setUser({
           id: session.user.id,
@@ -42,6 +45,13 @@ const App: React.FC = () => {
     };
 
     getSession();
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('session_id')) {
+      setCurrentPage('success');
+    } else if (params.get('canceled')) {
+      setCurrentPage('cancel');
+    }
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -135,7 +145,9 @@ const App: React.FC = () => {
     isMenuOpen,
     searchQuery,
     selectedCategory,
+    redirectAfterAuth,
     setUser,
+    setCart,
     addToCart,
     removeFromCart,
     updateQuantity,
@@ -144,6 +156,7 @@ const App: React.FC = () => {
     setIsMenuOpen,
     setSearchQuery,
     setSelectedCategory,
+    setRedirectAfterAuth,
     getTotalPrice,
     getTotalItems,
   };
@@ -168,6 +181,10 @@ const App: React.FC = () => {
         return <CustomWorkPage />;
       case 'faq':
         return <FAQPage />;
+      case 'success':
+        return <SuccessPage />;
+      case 'cancel':
+        return <CancelPage />;
       case 'admin':
         return <AdminPage />;
       default:

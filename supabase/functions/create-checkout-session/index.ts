@@ -117,6 +117,9 @@ Deno.serve(async (req: Request) => {
           currency: "usd",
           product_data: {
             name: product.name,
+            metadata: {
+              product_id: product.id,
+            },
           },
           unit_amount: Math.round(product.price * 100),
         },
@@ -126,13 +129,21 @@ Deno.serve(async (req: Request) => {
 
     const appUrl = Deno.env.get("VITE_APP_URL") || "http://localhost:5173";
 
+    const cartItemsJson = JSON.stringify(
+      cart_items.map((item: CartItem) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+      }))
+    );
+
     const session = await stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: "payment",
-      success_url: `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/cart`,
+      success_url: `${appUrl}?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appUrl}?canceled=true`,
       metadata: {
         user_id: user.id,
+        cart_items: cartItemsJson,
       },
     });
 

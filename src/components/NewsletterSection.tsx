@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, CheckCircle, AlertCircle, Sparkles, Bell, Gift } from 'lucide-react';
 import { subscribeToNewsletter } from '../lib/supabase';
+import OptimizedImage from './OptimizedImage';
 
 const NewsletterSection: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -32,7 +33,12 @@ const NewsletterSection: React.FC = () => {
 
   return (
     <section className="relative py-24 overflow-hidden bg-gradient-to-br from-timber-50 via-parchment-100 to-timber-100">
-      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'url(/bg.png)', backgroundSize: 'cover' }} />
+      <OptimizedImage
+        src="https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/bg.png"
+        alt="Background texture"
+        className="absolute inset-0 w-full h-full object-cover opacity-5"
+        priority={false}
+      />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -40,10 +46,12 @@ const NewsletterSection: React.FC = () => {
           <div className="relative order-2 lg:order-1">
             <div className="absolute -inset-4 bg-gradient-to-r from-ember-500/20 to-forge-500/20 blur-3xl rounded-full" />
             <div className="relative">
-              <img
-                src="/mailbox.png"
+              <OptimizedImage
+                src="https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/mailbox.png"
                 alt="Mailbox"
                 className="w-full h-auto drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
+                priority={false}
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
               <div className="absolute top-8 -right-4 bg-parchment-50 rounded-full p-4 shadow-craft animate-bounce">
                 <Mail className="h-8 w-8 text-forge-600" />

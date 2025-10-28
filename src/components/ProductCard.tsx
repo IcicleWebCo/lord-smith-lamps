@@ -3,6 +3,7 @@ import { Star, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 import { useApp } from '../context/AppContext';
 import { supabase } from '../lib/supabase';
+import OptimizedImage from './OptimizedImage';
 
 interface ProductImage {
   id: string;
@@ -55,17 +56,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  const currentImage = images.length > 0 ? images[currentImageIndex].image_url : product.image_url;
+  const currentImage = images.length > 0 ? images[currentImageIndex].image_url : null;
   const hasMultipleImages = images.length > 1;
   const isOutOfStock = product.quantity === 0;
+
+  if (!currentImage) {
+    return null;
+  }
 
   return (
     <div className="bg-walnut-900 rounded-xl overflow-hidden shadow-craft hover:shadow-forge transition-all duration-300 group">
       <div className="relative">
-        <img
+        <OptimizedImage
           src={currentImage}
           alt={product.name}
           className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+          priority={false}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         {hasMultipleImages && (
           <>
