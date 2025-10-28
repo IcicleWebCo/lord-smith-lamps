@@ -1,81 +1,134 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, CheckCircle, AlertCircle, Flame } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { signUp, signIn } from '../lib/supabase';
+import { signUp, signIn, resetPassword, updatePassword } from '../lib/supabase';
 import OptimizedImage from '../components/OptimizedImage';
 
 const AuthPage: React.FC = () => {
   const { setUser, setCurrentPage, redirectAfterAuth, setRedirectAfterAuth } = useApp();
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<'login' | 'signup' | 'forgot' | 'reset'>('login');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
+    confirmPassword: '',
   });
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlMode = params.get('mode');
+    if (urlMode === 'reset') {
+      setMode('reset');
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validation
-    if (!formData.email.trim() || !formData.password.trim()) {
-      setStatus('error');
-      setMessage('Please fill in all required fields.');
-      return;
-    }
-
-    if (!isLogin && !formData.name.trim()) {
-      setStatus('error');
-      setMessage('Please enter your full name.');
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setStatus('error');
-      setMessage('Password must be at least 6 characters long.');
-      return;
-    }
 
     setStatus('loading');
     setMessage('');
 
     try {
-      if (isLogin) {
-        // Sign in existing user
-        const { user } = await signIn(formData.email.trim(), formData.password);
-        
-        if (user) {
-          setUser({
-            id: user.id,
-            email: user.email!,
-            name: user.user_metadata?.name || user.email!.split('@')[0],
-          });
-          setStatus('success');
-          setMessage('Successfully signed in!');
-
-          // Redirect to the stored page or default to profile
-          setTimeout(() => {
-            const targetPage = redirectAfterAuth || 'profile';
-            setRedirectAfterAuth(null);
-            setCurrentPage(targetPage);
-          }, 1500);
+      if (mode === 'forgot') {
+        if (!formData.email.trim()) {
+          setStatus('error');
+          setMessage('Please enter your email address.');
+          return;
         }
+
+        await resetPassword(formData.email.trim());
+        setStatus('success');
+        setMessage('Password reset email sent! Please check your inbox and follow the instructions.');
+
+        setTimeout(() => {
+          setMode('login');
+          setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+          setStatus('idle');
+          setMessage('');
+        }, 5000);
+      } else if (mode === 'reset') {
+        if (!formData.password.trim() || !formData.confirmPassword.trim()) {
+          setStatus('error');
+          setMessage('Please fill in all password fields.');
+          return;
+        }
+
+        if (formData.password.length < 6) {
+          setStatus('error');
+          setMessage('Password must be at least 6 characters long.');
+          return;
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+          setStatus('error');
+          setMessage('Passwords do not match.');
+          return;
+        }
+
+        await updatePassword(formData.password);
+        setStatus('success');
+        setMessage('Password updated successfully! You can now sign in with your new password.');
+
+        setTimeout(() => {
+          setMode('login');
+          setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+          setStatus('idle');
+          setMessage('');
+        }, 3000);
       } else {
-        // Sign up new user
-        const { user } = await signUp(formData.email.trim(), formData.password, formData.name.trim());
-        
-        if (user) {
-          setStatus('success');
-          setMessage('Account created successfully! Please check your email to verify your account, then sign in.');
-          
-          // Switch to login form after successful signup
-          setTimeout(() => {
-            setIsLogin(true);
-            setFormData({ name: '', email: formData.email, password: '' });
-            setStatus('idle');
-            setMessage('');
-          }, 3000);
+        // Validation for login/signup
+        if (!formData.email.trim() || !formData.password.trim()) {
+          setStatus('error');
+          setMessage('Please fill in all required fields.');
+          return;
+        }
+
+        if (mode === 'signup' && !formData.name.trim()) {
+          setStatus('error');
+          setMessage('Please enter your full name.');
+          return;
+        }
+
+        if (formData.password.length < 6) {
+          setStatus('error');
+          setMessage('Password must be at least 6 characters long.');
+          return;
+        }
+
+        if (mode === 'login') {
+          const { user } = await signIn(formData.email.trim(), formData.password);
+
+          if (user) {
+            setUser({
+              id: user.id,
+              email: user.email!,
+              name: user.user_metadata?.name || user.email!.split('@')[0],
+            });
+            setStatus('success');
+            setMessage('Successfully signed in!');
+
+            setTimeout(() => {
+              const targetPage = redirectAfterAuth || 'profile';
+              setRedirectAfterAuth(null);
+              setCurrentPage(targetPage);
+            }, 1500);
+          }
+        } else if (mode === 'signup') {
+          const { user } = await signUp(formData.email.trim(), formData.password, formData.name.trim());
+
+          if (user) {
+            setStatus('success');
+            setMessage('Account created successfully! Please check your email to verify your account, then sign in.');
+
+            setTimeout(() => {
+              setMode('login');
+              setFormData({ name: '', email: formData.email, password: '', confirmPassword: '' });
+              setStatus('idle');
+              setMessage('');
+            }, 3000);
+          }
         }
       }
     } catch (error) {
@@ -131,15 +184,21 @@ const AuthPage: React.FC = () => {
               <User className="h-8 w-8 text-parchment-50 relative z-10" />
             </div>
             <h2 className="text-2xl font-bold text-parchment-50 font-display">
-              {isLogin ? 'Welcome Back' : 'Join Our Community'}
+              {mode === 'login' && 'Welcome Back'}
+              {mode === 'signup' && 'Join Our Community'}
+              {mode === 'forgot' && 'Reset Password'}
+              {mode === 'reset' && 'Create New Password'}
             </h2>
             <p className="text-parchment-300 mt-2">
-              {isLogin ? 'Sign in to continue your journey' : 'Create your account to get started'}
+              {mode === 'login' && 'Sign in to continue your journey'}
+              {mode === 'signup' && 'Create your account to get started'}
+              {mode === 'forgot' && 'Enter your email to receive a password reset link'}
+              {mode === 'reset' && 'Enter your new password below'}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {!isLogin && (
+            {mode === 'signup' && (
               <div>
                 <label className="block text-sm font-medium text-parchment-300 mb-2">
                   Full Name
@@ -152,52 +211,91 @@ const AuthPage: React.FC = () => {
                   disabled={status === 'loading'}
                   className="w-full px-4 py-3 bg-walnut-800 border border-walnut-700 rounded-lg text-parchment-100 placeholder-parchment-400 focus:outline-none focus:ring-2 focus:ring-ember-500 focus:border-transparent"
                   placeholder="Enter your full name"
-                  required={!isLogin}
+                  required
                 />
               </div>
             )}
 
-            <div>
-              <label className="block text-sm font-medium text-parchment-300 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                disabled={status === 'loading'}
-                className="w-full px-4 py-3 bg-walnut-800 border border-walnut-700 rounded-lg text-parchment-100 placeholder-parchment-400 focus:outline-none focus:ring-2 focus:ring-ember-500 focus:border-transparent"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
+            {mode !== 'reset' && (
+              <div>
+                <label className="block text-sm font-medium text-parchment-300 mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  disabled={status === 'loading'}
+                  className="w-full px-4 py-3 bg-walnut-800 border border-walnut-700 rounded-lg text-parchment-100 placeholder-parchment-400 focus:outline-none focus:ring-2 focus:ring-ember-500 focus:border-transparent"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+            )}
 
-            <div>
-              <label className="block text-sm font-medium text-parchment-300 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                disabled={status === 'loading'}
-                className="w-full px-4 py-3 bg-walnut-800 border border-walnut-700 rounded-lg text-parchment-100 placeholder-parchment-400 focus:outline-none focus:ring-2 focus:ring-ember-500 focus:border-transparent"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
+            {mode !== 'forgot' && (
+              <div>
+                <label className="block text-sm font-medium text-parchment-300 mb-2">
+                  {mode === 'reset' ? 'New Password' : 'Password'}
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  disabled={status === 'loading'}
+                  className="w-full px-4 py-3 bg-walnut-800 border border-walnut-700 rounded-lg text-parchment-100 placeholder-parchment-400 focus:outline-none focus:ring-2 focus:ring-ember-500 focus:border-transparent"
+                  placeholder={mode === 'reset' ? 'Enter your new password' : 'Enter your password'}
+                  required
+                />
+              </div>
+            )}
+
+            {mode === 'reset' && (
+              <div>
+                <label className="block text-sm font-medium text-parchment-300 mb-2">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  disabled={status === 'loading'}
+                  className="w-full px-4 py-3 bg-walnut-800 border border-walnut-700 rounded-lg text-parchment-100 placeholder-parchment-400 focus:outline-none focus:ring-2 focus:ring-ember-500 focus:border-transparent"
+                  placeholder="Confirm your new password"
+                  required
+                />
+              </div>
+            )}
+
+            {mode === 'login' && (
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setMode('forgot')}
+                  disabled={status === 'loading'}
+                  className="text-sm text-ember-400 hover:text-ember-300 transition-colors duration-300"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
 
             <button
               type="submit"
               disabled={status === 'loading'}
               className="w-full py-3 bg-gradient-to-r from-forge-600 to-forge-500 text-parchment-50 font-semibold rounded-lg hover:from-forge-700 hover:to-forge-600 transition-all duration-300 shadow-forge"
             >
-              {status === 'loading' 
-                ? (isLogin ? 'Signing In...' : 'Creating Account...') 
-                : (isLogin ? 'Sign In' : 'Create Account')
-              }
+              {status === 'loading' && mode === 'login' && 'Signing In...'}
+              {status === 'loading' && mode === 'signup' && 'Creating Account...'}
+              {status === 'loading' && mode === 'forgot' && 'Sending Reset Link...'}
+              {status === 'loading' && mode === 'reset' && 'Updating Password...'}
+              {status !== 'loading' && mode === 'login' && 'Sign In'}
+              {status !== 'loading' && mode === 'signup' && 'Create Account'}
+              {status !== 'loading' && mode === 'forgot' && 'Send Reset Link'}
+              {status !== 'loading' && mode === 'reset' && 'Update Password'}
             </button>
           </form>
 
@@ -217,16 +315,48 @@ const AuthPage: React.FC = () => {
           )}
 
           <div className="text-center mt-6">
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              disabled={status === 'loading'}
-              className="text-ember-400 hover:text-ember-300 transition-colors duration-300 font-medium"
-            >
-              {isLogin
-                ? "Don't have an account? Sign up"
-                : "Already have an account? Sign in"
-              }
-            </button>
+            {mode === 'login' && (
+              <button
+                onClick={() => {
+                  setMode('signup');
+                  setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+                  setStatus('idle');
+                  setMessage('');
+                }}
+                disabled={status === 'loading'}
+                className="text-ember-400 hover:text-ember-300 transition-colors duration-300 font-medium"
+              >
+                Don't have an account? Sign up
+              </button>
+            )}
+            {mode === 'signup' && (
+              <button
+                onClick={() => {
+                  setMode('login');
+                  setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+                  setStatus('idle');
+                  setMessage('');
+                }}
+                disabled={status === 'loading'}
+                className="text-ember-400 hover:text-ember-300 transition-colors duration-300 font-medium"
+              >
+                Already have an account? Sign in
+              </button>
+            )}
+            {mode === 'forgot' && (
+              <button
+                onClick={() => {
+                  setMode('login');
+                  setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+                  setStatus('idle');
+                  setMessage('');
+                }}
+                disabled={status === 'loading'}
+                className="text-ember-400 hover:text-ember-300 transition-colors duration-300 font-medium"
+              >
+                Back to sign in
+              </button>
+            )}
           </div>
         </div>
 

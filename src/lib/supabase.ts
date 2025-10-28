@@ -51,12 +51,32 @@ export const signOut = async () => {
 
 export const getCurrentUser = async () => {
   const { data: { user }, error } = await supabase.auth.getUser();
-  
+
   if (error) {
     throw new Error(error.message);
   }
 
   return user;
+};
+
+export const resetPassword = async (email: string) => {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/auth?mode=reset`,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const updatePassword = async (newPassword: string) => {
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
 };
 
 // Newsletter subscription function
