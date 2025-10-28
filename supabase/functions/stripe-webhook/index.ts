@@ -174,6 +174,39 @@ Deno.serve(async (req: Request) => {
         }
 
         console.log(`Order ${order.id} created successfully for user ${userId}`);
+
+        const { data: userData } = await supabase.auth.admin.getUserById(userId);
+
+        if (userData?.user?.email) {
+          const userName = userData.user.user_metadata?.name || userData.user.email.split('@')[0];
+
+          try {
+            const emailResponse = await fetch(
+              `${supabaseUrl}/functions/v1/send-order-confirmation`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${supabaseServiceKey}`,
+                },
+                body: JSON.stringify({
+                  orderId: order.id,
+                  userEmail: userData.user.email,
+                  userName: userName,
+                }),
+              }
+            );
+
+            if (emailResponse.ok) {
+              console.log(`Order confirmation email sent to ${userData.user.email}`);
+            } else {
+              console.error("Failed to send order confirmation email");
+            }
+          } catch (emailError) {
+            console.error("Error sending order confirmation email:", emailError);
+          }
+        }
+
         break;
       }
 
