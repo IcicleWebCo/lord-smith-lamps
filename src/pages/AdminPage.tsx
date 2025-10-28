@@ -6,11 +6,12 @@ import DashboardPage from './admin/DashboardPage';
 import ProductsPage from './admin/ProductsPage';
 import CategoriesPage from './admin/CategoriesPage';
 import SubscriptionsPage from './admin/SubscriptionsPage';
+import OrdersPage from './admin/OrdersPage';
 
 const AdminPage: React.FC = () => {
   const { isAdmin, loading } = useAdmin();
   const { user, setCurrentPage } = useApp();
-  const [currentSection, setCurrentSection] = useState<'dashboard' | 'products' | 'categories' | 'subscriptions'>('dashboard');
+  const [currentSection, setCurrentSection] = useState<'dashboard' | 'products' | 'categories' | 'subscriptions' | 'orders'>('dashboard');
 
   if (loading) {
     return (
@@ -59,6 +60,7 @@ const AdminPage: React.FC = () => {
       {currentSection === 'dashboard' && <DashboardPage />}
       {currentSection === 'products' && <ProductsPage />}
       {currentSection === 'categories' && <CategoriesPage />}
+      {currentSection === 'orders' && <OrdersPage />}
       {currentSection === 'subscriptions' && <SubscriptionsPage />}
     </AdminLayout>
   );

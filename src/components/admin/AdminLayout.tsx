@@ -1,12 +1,12 @@
 import React from 'react';
-import { LayoutDashboard, Package, FolderTree, LogOut, Mail } from 'lucide-react';
+import { LayoutDashboard, Package, FolderTree, LogOut, Mail, ShoppingCart } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useApp } from '../../context/AppContext';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
-  currentSection: 'dashboard' | 'products' | 'categories' | 'subscriptions';
-  onNavigate: (section: 'dashboard' | 'products' | 'categories' | 'subscriptions') => void;
+  currentSection: 'dashboard' | 'products' | 'categories' | 'subscriptions' | 'orders';
+  onNavigate: (section: 'dashboard' | 'products' | 'categories' | 'subscriptions' | 'orders') => void;
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentSection, onNavigate }) => {
@@ -22,6 +22,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentSection, onN
     { id: 'dashboard' as const, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'products' as const, label: 'Products', icon: Package },
     { id: 'categories' as const, label: 'Categories', icon: FolderTree },
+    { id: 'orders' as const, label: 'Orders', icon: ShoppingCart },
     { id: 'subscriptions' as const, label: 'Subscriptions', icon: Mail },
   ];
 
