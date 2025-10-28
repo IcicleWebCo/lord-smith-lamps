@@ -141,11 +141,6 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ orders, loading }) => {
               ))}
             </div>
           </div>
-
-          <div className="bg-walnut-900 border-t border-walnut-700 px-6 py-4 flex items-center justify-between group-hover:bg-walnut-800 transition-colors">
-            <span className="text-sm text-parchment-400">View order details</span>
-            <ChevronRight className="h-5 w-5 text-parchment-400 group-hover:text-ember-400 transition-colors" />
-          </div>
         </div>
       ))}
     </div>
