@@ -101,7 +101,7 @@ const ProductsPage: React.FC = () => {
             Our Collection
           </h1>
           <p className="text-xl text-parchment-300">
-            Discover authentic handcrafted pieces made with traditional techniques
+            Discover authentic handcrafted pieces
           </p>
         </div>
 
