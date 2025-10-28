@@ -65,7 +65,7 @@ const SuccessPage: React.FC = () => {
                 <div className="flex justify-between text-parchment-300">
                   <span>Order ID:</span>
                   <span className="text-parchment-100 font-mono text-sm">
-                    {orderDetails.id.slice(0, 8)}...
+                    {orderDetails.id}
                   </span>
                 </div>
 
