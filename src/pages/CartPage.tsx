@@ -309,7 +309,16 @@ const CartPage: React.FC = () => {
                   <h2 className="text-xl font-semibold text-parchment-50">Shipping Address</h2>
                 </div>
                 <button
-                  onClick={() => setShowAddressForm(!showAddressForm)}
+                  onClick={async () => {
+                    if (!showAddressForm) {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      if (!session) {
+                        setShowAuthModal(true);
+                        return;
+                      }
+                    }
+                    setShowAddressForm(!showAddressForm);
+                  }}
                   className="text-ember-400 hover:text-ember-300 text-sm font-medium"
                 >
                   {showAddressForm ? 'Cancel' : '+ Add New Address'}
@@ -496,7 +505,14 @@ const CartPage: React.FC = () => {
                 <div className="text-center py-8">
                   <p className="text-parchment-400 mb-4">No shipping addresses saved</p>
                   <button
-                    onClick={() => setShowAddressForm(true)}
+                    onClick={async () => {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      if (!session) {
+                        setShowAuthModal(true);
+                        return;
+                      }
+                      setShowAddressForm(true);
+                    }}
                     className="text-ember-400 hover:text-ember-300 font-medium"
                   >
                     Add your first address
