@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Truck, Calendar, User, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getOrders, toggleOrderShipped, type OrderWithDetails } from '../../lib/admin';
+import TrackingModal from '../../components/admin/TrackingModal';
 
 const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<OrderWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string>('');
   const ordersPerPage = 10;
 
   useEffect(() => {
@@ -19,18 +22,31 @@ const OrdersPage: React.FC = () => {
     setLoading(false);
   };
 
-  const handleToggleShipped = async (orderId: string, currentStatus: boolean) => {
+  const handleToggleShipped = (orderId: string, currentStatus: boolean) => {
+    if (!currentStatus) {
+      setSelectedOrderId(orderId);
+      setIsTrackingModalOpen(true);
+    } else {
+      handleUnshipOrder(orderId);
+    }
+  };
+
+  const handleShipOrder = async (trackingNumber: string) => {
     try {
-      if (!currentStatus) {
-        const trackingNumber = prompt('Enter tracking number (optional):');
-        if (trackingNumber === null) return;
-        await toggleOrderShipped(orderId, true, trackingNumber || undefined);
-      } else {
-        await toggleOrderShipped(orderId, false);
-      }
+      await toggleOrderShipped(selectedOrderId, true, trackingNumber || undefined);
       await loadOrders();
     } catch (error) {
-      console.error('Error toggling shipped status:', error);
+      console.error('Error marking order as shipped:', error);
+      alert('Failed to update order status');
+    }
+  };
+
+  const handleUnshipOrder = async (orderId: string) => {
+    try {
+      await toggleOrderShipped(orderId, false);
+      await loadOrders();
+    } catch (error) {
+      console.error('Error marking order as unshipped:', error);
       alert('Failed to update order status');
     }
   };
@@ -206,6 +222,13 @@ const OrdersPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      <TrackingModal
+        isOpen={isTrackingModalOpen}
+        onClose={() => setIsTrackingModalOpen(false)}
+        onSubmit={handleShipOrder}
+        orderIdShort={orders.find(o => o.id === selectedOrderId)?.id.slice(0, 8) || ''}
+      />
     </div>
   );
 };
