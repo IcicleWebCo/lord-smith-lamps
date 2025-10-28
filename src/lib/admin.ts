@@ -437,6 +437,33 @@ export async function getOrders(): Promise<OrderWithDetails[]> {
   return ordersWithDetails;
 }
 
+export async function getUserEmailByOrderId(orderId: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('user_id')
+    .eq('id', orderId)
+    .maybeSingle();
+
+  if (error || !data) {
+    console.error('Error fetching order user:', error);
+    return null;
+  }
+
+  const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users/${data.user_id}`, {
+    headers: {
+      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+    },
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const userData = await response.json();
+  return userData?.email || null;
+}
+
 export async function toggleOrderShipped(orderId: string, shipped: boolean, trackingNumber?: string): Promise<void> {
   const updates: { shipped: boolean; shipped_at?: string | null; tracking_number?: string | null } = {
     shipped,

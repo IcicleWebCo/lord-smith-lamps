@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Truck, Calendar, User, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
-import { getOrders, toggleOrderShipped, type OrderWithDetails } from '../../lib/admin';
+import { getOrders, toggleOrderShipped, getUserEmailByOrderId, type OrderWithDetails } from '../../lib/admin';
 import TrackingModal from '../../components/admin/TrackingModal';
 
 const OrdersPage: React.FC = () => {
@@ -33,7 +33,40 @@ const OrdersPage: React.FC = () => {
 
   const handleShipOrder = async (trackingNumber: string) => {
     try {
+      const order = orders.find(o => o.id === selectedOrderId);
+      if (!order) {
+        throw new Error('Order not found');
+      }
+
       await toggleOrderShipped(selectedOrderId, true, trackingNumber || undefined);
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      const userEmail = await getUserEmailByOrderId(selectedOrderId);
+
+      if (userEmail) {
+        const emailUrl = `${supabaseUrl}/functions/v1/send-shipping-notification`;
+
+        const emailResponse = await fetch(emailUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderId: selectedOrderId,
+            userEmail: userEmail,
+            userName: order.shipping_address?.full_name || 'Customer',
+            trackingNumber: trackingNumber || undefined,
+          }),
+        });
+
+        if (!emailResponse.ok) {
+          console.error('Failed to send shipping notification email');
+        }
+      }
+
       await loadOrders();
     } catch (error) {
       console.error('Error marking order as shipped:', error);
