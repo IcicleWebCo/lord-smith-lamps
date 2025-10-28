@@ -84,47 +84,62 @@ const CartPage: React.FC = () => {
     return productImages[productId] || fallbackUrl;
   };
 
-  const handleSaveAddress = async () => {
+  const handleSaveAddress = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-
-    if (addressForm.is_default) {
-      await supabase
-        .from('shipping_addresses')
-        .update({ is_default: false })
-        .eq('user_id', session.user.id);
-    }
-
-    const { data, error } = await supabase
-      .from('shipping_addresses')
-      .insert([{
-        ...addressForm,
-        user_id: session.user.id,
-      }])
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error saving address:', error);
-      alert('Failed to save address. Please try again.');
+    if (!session) {
+      alert('Please sign in to save addresses.');
       return;
     }
 
-    setShippingAddresses([data, ...shippingAddresses]);
-    setSelectedAddressId(data.id);
-    setShowAddressForm(false);
-    setAddressForm({
-      full_name: '',
-      address_line1: '',
-      address_line2: '',
-      city: '',
-      state: '',
-      postal_code: '',
-      country: 'US',
-      phone: '',
-      special_instructions: '',
-      is_default: false,
-    });
+    if (!addressForm.full_name || !addressForm.address_line1 || !addressForm.city || !addressForm.state || !addressForm.postal_code) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    try {
+      if (addressForm.is_default) {
+        await supabase
+          .from('shipping_addresses')
+          .update({ is_default: false })
+          .eq('user_id', session.user.id);
+      }
+
+      const { data, error } = await supabase
+        .from('shipping_addresses')
+        .insert([{
+          ...addressForm,
+          user_id: session.user.id,
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error saving address:', error);
+        alert(`Failed to save address: ${error.message}`);
+        return;
+      }
+
+      setShippingAddresses([data, ...shippingAddresses]);
+      setSelectedAddressId(data.id);
+      setShowAddressForm(false);
+      setAddressForm({
+        full_name: '',
+        address_line1: '',
+        address_line2: '',
+        city: '',
+        state: '',
+        postal_code: '',
+        country: 'US',
+        phone: '',
+        special_instructions: '',
+        is_default: false,
+      });
+    } catch (err) {
+      console.error('Unexpected error saving address:', err);
+      alert('An unexpected error occurred. Please try again.');
+    }
   };
 
   const handleCheckout = async () => {
@@ -302,7 +317,7 @@ const CartPage: React.FC = () => {
               </div>
 
               {showAddressForm && (
-                <div className="mb-6 p-4 bg-walnut-800 rounded-lg space-y-4">
+                <form onSubmit={handleSaveAddress} className="mb-6 p-4 bg-walnut-800 rounded-lg space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-parchment-300 mb-1">
@@ -420,13 +435,13 @@ const CartPage: React.FC = () => {
                   </div>
 
                   <button
-                    onClick={handleSaveAddress}
+                    type="submit"
                     disabled={!addressForm.full_name || !addressForm.address_line1 || !addressForm.city || !addressForm.state || !addressForm.postal_code}
                     className="w-full py-2 bg-gradient-to-r from-ember-600 to-ember-500 text-parchment-50 rounded-lg font-semibold hover:from-ember-700 hover:to-ember-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Save Address
                   </button>
-                </div>
+                </form>
               )}
 
               {shippingAddresses.length > 0 ? (
