@@ -32,7 +32,7 @@ const ProfilePage: React.FC = () => {
   const { isAdmin } = useAdmin();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabType>('orders');
+  const [activeTab, setActiveTab] = useState<TabType>('settings');
 
   useEffect(() => {
     if (user) {
