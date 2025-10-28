@@ -438,30 +438,14 @@ export async function getOrders(): Promise<OrderWithDetails[]> {
 }
 
 export async function getUserEmailByOrderId(orderId: string): Promise<string | null> {
-  const { data, error } = await supabase
-    .from('orders')
-    .select('user_id')
-    .eq('id', orderId)
-    .maybeSingle();
+  const { data, error } = await supabase.rpc('get_user_email_by_order', { order_id: orderId });
 
-  if (error || !data) {
-    console.error('Error fetching order user:', error);
+  if (error) {
+    console.error('Error fetching user email:', error);
     return null;
   }
 
-  const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users/${data.user_id}`, {
-    headers: {
-      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-      'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-    },
-  });
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const userData = await response.json();
-  return userData?.email || null;
+  return data || null;
 }
 
 export async function toggleOrderShipped(orderId: string, shipped: boolean, trackingNumber?: string): Promise<void> {
