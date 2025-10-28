@@ -21,7 +21,13 @@ const OrdersPage: React.FC = () => {
 
   const handleToggleShipped = async (orderId: string, currentStatus: boolean) => {
     try {
-      await toggleOrderShipped(orderId, !currentStatus);
+      if (!currentStatus) {
+        const trackingNumber = prompt('Enter tracking number (optional):');
+        if (trackingNumber === null) return;
+        await toggleOrderShipped(orderId, true, trackingNumber || undefined);
+      } else {
+        await toggleOrderShipped(orderId, false);
+      }
       await loadOrders();
     } catch (error) {
       console.error('Error toggling shipped status:', error);
@@ -75,19 +81,26 @@ const OrdersPage: React.FC = () => {
                       <p className="text-sm font-semibold text-parchment-50">
                         ${parseFloat(order.total_amount).toFixed(2)}
                       </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          order.status === 'completed'
-                            ? 'bg-green-900/30 text-green-400 border border-green-800'
-                            : 'bg-copper-900/30 text-copper-400 border border-copper-800'
-                        }`}>
-                          {order.status}
-                        </span>
-                        {order.shipped && (
-                          <span className="px-2 py-1 text-xs rounded-full bg-blue-900/30 text-blue-400 border border-blue-800 flex items-center gap-1">
-                            <Truck className="h-3 w-3" />
-                            Shipped
+                      <div className="flex flex-col gap-2 mt-2">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            order.status === 'completed'
+                              ? 'bg-green-900/30 text-green-400 border border-green-800'
+                              : 'bg-copper-900/30 text-copper-400 border border-copper-800'
+                          }`}>
+                            {order.status}
                           </span>
+                          {order.shipped && (
+                            <span className="px-2 py-1 text-xs rounded-full bg-blue-900/30 text-blue-400 border border-blue-800 flex items-center gap-1">
+                              <Truck className="h-3 w-3" />
+                              Shipped
+                            </span>
+                          )}
+                        </div>
+                        {order.shipped && order.tracking_number && (
+                          <div className="text-xs text-parchment-400">
+                            Tracking: <span className="text-parchment-300 font-mono">{order.tracking_number}</span>
+                          </div>
                         )}
                       </div>
                     </div>

@@ -390,6 +390,7 @@ export interface OrderWithDetails {
   status: string;
   shipped: boolean;
   shipped_at: string | null;
+  tracking_number: string | null;
   created_at: string;
   updated_at: string;
   order_items: OrderItem[];
@@ -436,15 +437,17 @@ export async function getOrders(): Promise<OrderWithDetails[]> {
   return ordersWithDetails;
 }
 
-export async function toggleOrderShipped(orderId: string, shipped: boolean): Promise<void> {
-  const updates: { shipped: boolean; shipped_at?: string | null } = {
+export async function toggleOrderShipped(orderId: string, shipped: boolean, trackingNumber?: string): Promise<void> {
+  const updates: { shipped: boolean; shipped_at?: string | null; tracking_number?: string | null } = {
     shipped,
   };
 
   if (shipped) {
     updates.shipped_at = new Date().toISOString();
+    updates.tracking_number = trackingNumber || null;
   } else {
     updates.shipped_at = null;
+    updates.tracking_number = null;
   }
 
   const { error } = await supabase
