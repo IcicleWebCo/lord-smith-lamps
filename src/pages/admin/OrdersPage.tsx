@@ -9,7 +9,7 @@ const OrdersPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string>('');
-  const ordersPerPage = 10;
+  const ordersPerPage = 5;
 
   useEffect(() => {
     loadOrders();
