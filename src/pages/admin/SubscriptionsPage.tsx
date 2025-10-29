@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, CheckCircle, XCircle, Search, Trash2, Calendar } from 'lucide-react';
+import { Mail, CheckCircle, XCircle, Search, Trash2, Calendar, Copy, Check } from 'lucide-react';
 import { getSubscriptions, updateSubscription, deleteSubscription, NewsletterSubscription } from '../../lib/admin';
 
 const SubscriptionsPage: React.FC = () => {
@@ -7,6 +7,8 @@ const SubscriptionsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [showEmailList, setShowEmailList] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     loadSubscriptions();
@@ -59,6 +61,24 @@ const SubscriptionsPage: React.FC = () => {
     });
   };
 
+  const getEmailList = () => {
+    return filteredSubscriptions
+      .filter(sub => sub.is_active)
+      .map(sub => sub.email)
+      .join(', ');
+  };
+
+  const handleCopyEmails = async () => {
+    const emailList = getEmailList();
+    try {
+      await navigator.clipboard.writeText(emailList);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy emails:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -69,10 +89,56 @@ const SubscriptionsPage: React.FC = () => {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-parchment-50 font-display">Newsletter Subscriptions</h1>
-        <p className="text-parchment-300 mt-2">Manage your email subscribers</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-parchment-50 font-display">Newsletter Subscriptions</h1>
+          <p className="text-parchment-300 mt-2">Manage your email subscribers</p>
+        </div>
+        <button
+          onClick={() => setShowEmailList(!showEmailList)}
+          className="px-4 py-2 bg-gradient-to-r from-forge-600 to-forge-500 text-parchment-50 rounded-lg font-semibold hover:from-forge-700 hover:to-forge-600 transition-all duration-300 shadow-forge flex items-center gap-2"
+        >
+          <Mail className="h-4 w-4" />
+          {showEmailList ? 'Hide' : 'View'} Email List
+        </button>
       </div>
+
+      {showEmailList && (
+        <div className="bg-walnut-900 border-2 border-forge-600 rounded-lg p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-bold text-parchment-50 font-display flex items-center gap-2">
+                <Mail className="h-5 w-5 text-ember-400" />
+                Active Email Addresses
+              </h3>
+              <p className="text-parchment-400 text-sm mt-1">
+                {filteredSubscriptions.filter(sub => sub.is_active).length} active subscribers
+              </p>
+            </div>
+            <button
+              onClick={handleCopyEmails}
+              className="px-4 py-2 bg-forge-600 text-parchment-50 rounded-lg font-semibold hover:bg-forge-700 transition-all duration-300 flex items-center gap-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-4 w-4" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4" />
+                  Copy to Clipboard
+                </>
+              )}
+            </button>
+          </div>
+          <div className="bg-walnut-800 border border-walnut-700 rounded-lg p-4 max-h-48 overflow-y-auto">
+            <p className="text-parchment-200 text-sm font-mono break-all leading-relaxed">
+              {getEmailList() || 'No active subscribers'}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="bg-walnut-900 border border-walnut-800 rounded-lg p-6 mb-6">
         <div className="flex flex-col sm:flex-row gap-4">
