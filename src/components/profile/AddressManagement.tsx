@@ -53,6 +53,7 @@ const AddressManagement: React.FC<AddressManagementProps> = ({ userId }) => {
       const { data, error } = await supabase
         .from('shipping_addresses')
         .select('*')
+        .eq('user_id', userId)
         .order('is_default', { ascending: false })
         .order('created_at', { ascending: false });
 
@@ -123,6 +124,7 @@ const AddressManagement: React.FC<AddressManagementProps> = ({ userId }) => {
         await supabase
           .from('shipping_addresses')
           .update({ is_default: false })
+          .eq('user_id', userId)
           .neq('id', editingId || '');
       }
 
@@ -161,7 +163,8 @@ const AddressManagement: React.FC<AddressManagementProps> = ({ userId }) => {
       const { error } = await supabase
         .from('shipping_addresses')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', userId);
 
       if (error) throw error;
       setSuccess('Address deleted successfully');
@@ -180,12 +183,14 @@ const AddressManagement: React.FC<AddressManagementProps> = ({ userId }) => {
       await supabase
         .from('shipping_addresses')
         .update({ is_default: false })
+        .eq('user_id', userId)
         .neq('id', id);
 
       const { error } = await supabase
         .from('shipping_addresses')
         .update({ is_default: true })
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', userId);
 
       if (error) throw error;
       setSuccess('Default address updated');

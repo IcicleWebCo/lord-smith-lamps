@@ -59,6 +59,7 @@ const CartPage: React.FC = () => {
     const { data, error } = await supabase
       .from('shipping_addresses')
       .select('*')
+      .eq('user_id', session.user.id)
       .order('is_default', { ascending: false })
       .order('created_at', { ascending: false });
 
