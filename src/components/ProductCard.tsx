@@ -9,6 +9,7 @@ interface ProductImage {
   id: string;
   product_id: string;
   image_url: string;
+  thumbnail_url: string;
   seq: number;
   alt_text: string;
 }
@@ -76,6 +77,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   const currentImage = images.length > 0 ? images[currentImageIndex].image_url : null;
+  const currentThumbnail = images.length > 0 ? (images[currentImageIndex].thumbnail_url || images[currentImageIndex].image_url) : null;
   const hasMultipleImages = images.length > 1;
   const isOutOfStock = product.quantity === 0;
 
@@ -88,7 +90,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="bg-walnut-900 rounded-xl overflow-hidden shadow-craft hover:shadow-forge transition-all duration-300 group">
         <div className="relative cursor-pointer" onClick={handleImageClick}>
           <OptimizedImage
-            src={currentImage}
+            src={currentThumbnail}
             alt={product.name}
             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
             priority={false}

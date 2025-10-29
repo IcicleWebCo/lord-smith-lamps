@@ -75,11 +75,12 @@ const ProductsPage: React.FC = () => {
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const imageUrl = await uploadProductImage(file);
+        const { imageUrl, thumbnailUrl } = await uploadProductImage(file);
 
         await createProductImage({
           product_id: productId,
           image_url: imageUrl,
+          thumbnail_url: thumbnailUrl,
           seq: nextSeq + i,
           alt_text: file.name,
         });
@@ -188,11 +189,12 @@ const ProductsPage: React.FC = () => {
       if (newProduct && newProductImages.length > 0) {
         for (let i = 0; i < newProductImages.length; i++) {
           const file = newProductImages[i];
-          const imageUrl = await uploadProductImage(file);
+          const { imageUrl, thumbnailUrl } = await uploadProductImage(file);
 
           await createProductImage({
             product_id: newProduct.id,
             image_url: imageUrl,
+            thumbnail_url: thumbnailUrl,
             seq: i + 1,
             alt_text: file.name,
           });

@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { createThumbnail, fileFromBlob } from './imageUtils';
 
 export interface UserRole {
   id: string;
@@ -201,16 +202,28 @@ function extractStoragePath(imageUrl: string): string | null {
   return null;
 }
 
-async function deleteImageFromStorage(imageUrl: string): Promise<void> {
-  const storagePath = extractStoragePath(imageUrl);
+async function deleteImageFromStorage(imageUrl: string, thumbnailUrl?: string): Promise<void> {
+  const pathsToDelete: string[] = [];
 
+  const storagePath = extractStoragePath(imageUrl);
   if (storagePath) {
+    pathsToDelete.push(storagePath);
+  }
+
+  if (thumbnailUrl && thumbnailUrl !== imageUrl) {
+    const thumbnailPath = extractStoragePath(thumbnailUrl);
+    if (thumbnailPath) {
+      pathsToDelete.push(thumbnailPath);
+    }
+  }
+
+  if (pathsToDelete.length > 0) {
     const { error } = await supabase.storage
       .from('Product Images')
-      .remove([storagePath]);
+      .remove(pathsToDelete);
 
     if (error) {
-      console.error('Error deleting image from storage:', error);
+      console.error('Error deleting images from storage:', error);
     }
   }
 }
@@ -220,7 +233,7 @@ export async function deleteProduct(id: string): Promise<void> {
 
   for (const image of images) {
     if (image.image_url) {
-      await deleteImageFromStorage(image.image_url);
+      await deleteImageFromStorage(image.image_url, image.thumbnail_url);
     }
   }
 
@@ -305,6 +318,7 @@ export interface ProductImage {
   id: string;
   product_id: string;
   image_url: string;
+  thumbnail_url: string;
   seq: number;
   alt_text: string;
   created_at: string;
@@ -360,7 +374,7 @@ export async function updateProductImage(id: string, updates: Partial<ProductIma
 export async function deleteProductImage(id: string): Promise<void> {
   const { data: image, error: fetchError } = await supabase
     .from('product_images')
-    .select('image_url')
+    .select('image_url, thumbnail_url')
     .eq('id', id)
     .maybeSingle();
 
@@ -370,7 +384,7 @@ export async function deleteProductImage(id: string): Promise<void> {
   }
 
   if (image?.image_url) {
-    await deleteImageFromStorage(image.image_url);
+    await deleteImageFromStorage(image.image_url, image.thumbnail_url);
   }
 
   const { error } = await supabase
@@ -384,7 +398,7 @@ export async function deleteProductImage(id: string): Promise<void> {
   }
 }
 
-export async function uploadProductImage(file: File): Promise<string> {
+export async function uploadProductImage(file: File): Promise<{ imageUrl: string; thumbnailUrl: string }> {
   const fileExt = file.name.split('.').pop();
   const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
   const filePath = `products/${fileName}`;
@@ -402,7 +416,30 @@ export async function uploadProductImage(file: File): Promise<string> {
     .from('Product Images')
     .getPublicUrl(filePath);
 
-  return data.publicUrl;
+  const thumbnailBlob = await createThumbnail(file, {
+    maxWidth: 400,
+    maxHeight: 400,
+    quality: 0.85,
+  });
+
+  const thumbnailFileName = `${Math.random().toString(36).substring(2)}-${Date.now()}-thumb.jpg`;
+  const thumbnailPath = `products/thumbnails/${thumbnailFileName}`;
+  const thumbnailFile = fileFromBlob(thumbnailBlob, thumbnailFileName);
+
+  const { error: thumbnailUploadError } = await supabase.storage
+    .from('Product Images')
+    .upload(thumbnailPath, thumbnailFile);
+
+  if (thumbnailUploadError) {
+    console.error('Error uploading thumbnail:', thumbnailUploadError);
+    return { imageUrl: data.publicUrl, thumbnailUrl: data.publicUrl };
+  }
+
+  const { data: thumbnailData } = supabase.storage
+    .from('Product Images')
+    .getPublicUrl(thumbnailPath);
+
+  return { imageUrl: data.publicUrl, thumbnailUrl: thumbnailData.publicUrl };
 }
 
 export interface OrderItem {
