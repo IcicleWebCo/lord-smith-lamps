@@ -90,7 +90,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="bg-walnut-900 rounded-xl overflow-hidden shadow-craft hover:shadow-forge transition-all duration-300 group">
         <div className="relative cursor-pointer" onClick={handleImageClick}>
           <OptimizedImage
-            src={currentThumbnail}
+            src={currentImage}
             alt={product.name}
             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
             priority={false}
