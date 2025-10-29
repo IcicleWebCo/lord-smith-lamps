@@ -475,6 +475,9 @@ export interface OrderWithDetails {
   user_id: string;
   order_date: string;
   total_amount: string;
+  subtotal_amount: string;
+  tax_amount: string;
+  shipping_amount: string;
   stripe_payment_intent_id: string;
   status: string;
   shipped: boolean;

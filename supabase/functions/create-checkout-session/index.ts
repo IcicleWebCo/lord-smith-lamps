@@ -78,7 +78,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { cart_items } = await req.json();
+    const { cart_items, shipping_address_id } = await req.json();
 
     if (!cart_items || !Array.isArray(cart_items) || cart_items.length === 0) {
       return new Response(
@@ -94,10 +94,10 @@ Deno.serve(async (req: Request) => {
     }
 
     const productIds = cart_items.map((item: CartItem) => item.product_id);
-    
+
     const { data: products, error: productsError } = await supabase
       .from("products")
-      .select("id, name, price")
+      .select("id, name, price, shipping_price")
       .in("id", productIds);
 
     if (productsError || !products) {
@@ -132,7 +132,13 @@ Deno.serve(async (req: Request) => {
       return total + (product ? product.price * item.quantity : 0);
     }, 0);
 
+    const shippingTotal = cart_items.reduce((total: number, item: CartItem) => {
+      const product = productMap.get(item.product_id);
+      return total + (product ? (product.shipping_price || 0) * item.quantity : 0);
+    }, 0);
+
     const taxAmount = Math.round(subtotal * 0.095 * 100);
+    const shippingAmount = Math.round(shippingTotal * 100);
 
     lineItems.push({
       price_data: {
@@ -144,6 +150,19 @@ Deno.serve(async (req: Request) => {
       },
       quantity: 1,
     });
+
+    if (shippingAmount > 0) {
+      lineItems.push({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: "Shipping",
+          },
+          unit_amount: shippingAmount,
+        },
+        quantity: 1,
+      });
+    }
 
     const appUrl = Deno.env.get("VITE_APP_URL") || "http://localhost:5173";
 
@@ -162,6 +181,10 @@ Deno.serve(async (req: Request) => {
       metadata: {
         user_id: user.id,
         cart_items: cartItemsJson,
+        subtotal: subtotal.toString(),
+        tax: (taxAmount / 100).toString(),
+        shipping: (shippingAmount / 100).toString(),
+        shipping_address_id: shipping_address_id || "",
       },
     });
 

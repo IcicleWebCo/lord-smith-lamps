@@ -100,12 +100,18 @@ Deno.serve(async (req: Request) => {
         );
 
         const totalAmount = session.amount_total ? session.amount_total / 100 : 0;
+        const subtotalAmount = session.metadata?.subtotal ? parseFloat(session.metadata.subtotal) : 0;
+        const taxAmount = session.metadata?.tax ? parseFloat(session.metadata.tax) : 0;
+        const shippingAmount = session.metadata?.shipping ? parseFloat(session.metadata.shipping) : 0;
 
         const { data: order, error: orderError } = await supabase
           .from("orders")
           .insert({
             user_id: userId,
             total_amount: totalAmount,
+            subtotal_amount: subtotalAmount,
+            tax_amount: taxAmount,
+            shipping_amount: shippingAmount,
             stripe_payment_intent_id: session.payment_intent as string,
             status: "completed",
             order_date: new Date().toISOString(),
