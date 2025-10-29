@@ -104,16 +104,15 @@ const OrdersPage: React.FC = () => {
         <p className="text-parchment-300 mt-2">Manage customer orders and shipping</p>
       </div>
 
-      <div className="bg-walnut-900 border border-walnut-800 rounded-lg overflow-hidden">
-        <div className="divide-y divide-walnut-800">
-          {currentOrders.length === 0 ? (
-            <div className="p-8 text-center text-parchment-400">
-              No orders found
-            </div>
-          ) : (
-            currentOrders.map((order) => (
-              <div key={order.id} className="p-4 hover:bg-walnut-850 transition-colors">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="space-y-4">
+        {currentOrders.length === 0 ? (
+          <div className="bg-walnut-900 border border-walnut-800 rounded-lg p-8 text-center text-parchment-400">
+            No orders found
+          </div>
+        ) : (
+          currentOrders.map((order) => (
+            <div key={order.id} className="bg-walnut-900 border border-walnut-800 rounded-lg p-6 hover:border-walnut-700 transition-colors shadow-lg">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Package className="h-4 w-4 text-forge-400" />
@@ -226,10 +225,10 @@ const OrdersPage: React.FC = () => {
               </div>
             ))
           )}
-        </div>
+      </div>
 
-        {totalPages > 1 && (
-          <div className="border-t border-walnut-800 p-4 flex items-center justify-between">
+      {totalPages > 1 && (
+        <div className="mt-6 bg-walnut-900 border border-walnut-800 rounded-lg p-4 flex items-center justify-between">
             <div className="text-sm text-parchment-400">
               Showing {indexOfFirstOrder + 1} to {Math.min(indexOfLastOrder, orders.length)} of {orders.length} orders
             </div>
@@ -252,9 +251,8 @@ const OrdersPage: React.FC = () => {
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <TrackingModal
         isOpen={isTrackingModalOpen}
