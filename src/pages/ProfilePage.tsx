@@ -25,6 +25,7 @@ interface Order {
   tax_amount: number;
   shipping_amount: number;
   status: string;
+  tracking_number?: string;
   order_items: OrderItem[];
 }
 
@@ -55,6 +56,7 @@ const ProfilePage: React.FC = () => {
           tax_amount,
           shipping_amount,
           status,
+          tracking_number,
           order_items (
             id,
             product_id,

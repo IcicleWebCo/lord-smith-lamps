@@ -1,5 +1,5 @@
-import React from 'react';
-import { Package, ImageOff, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Package, ImageOff, ChevronRight, Truck, Copy, Check } from 'lucide-react';
 
 interface OrderItem {
   id: string;
@@ -18,6 +18,7 @@ interface Order {
   tax_amount: number;
   shipping_amount: number;
   status: string;
+  tracking_number?: string;
   order_items: OrderItem[];
 }
 
@@ -27,6 +28,17 @@ interface OrderHistoryProps {
 }
 
 const OrderHistory: React.FC<OrderHistoryProps> = ({ orders, loading }) => {
+  const [copiedTrackingId, setCopiedTrackingId] = useState<string | null>(null);
+
+  const copyTrackingNumber = async (trackingNumber: string, orderId: string) => {
+    try {
+      await navigator.clipboard.writeText(trackingNumber);
+      setCopiedTrackingId(orderId);
+      setTimeout(() => setCopiedTrackingId(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy tracking number:', err);
+    }
+  };
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -100,6 +112,28 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ orders, loading }) => {
                 <p className="text-sm text-parchment-400">
                   Placed on {formatDate(order.order_date)}
                 </p>
+                {order.status.toLowerCase() === 'shipped' && order.tracking_number && (
+                  <div className="mt-3 flex items-center gap-2 bg-gold-900/30 border border-gold-700 rounded-lg px-3 py-2">
+                    <Truck className="h-4 w-4 text-gold-400 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gold-400 font-semibold mb-0.5">Tracking Number</p>
+                      <p className="text-sm text-parchment-50 font-mono truncate">
+                        {order.tracking_number}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => copyTrackingNumber(order.tracking_number!, order.id)}
+                      className="flex-shrink-0 p-2 hover:bg-gold-800 rounded-lg transition-colors"
+                      title="Copy tracking number"
+                    >
+                      {copiedTrackingId === order.id ? (
+                        <Check className="h-4 w-4 text-patina-400" />
+                      ) : (
+                        <Copy className="h-4 w-4 text-gold-400" />
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="text-left sm:text-right">
                 <p className="text-sm text-parchment-400 mb-1">Total Amount</p>
