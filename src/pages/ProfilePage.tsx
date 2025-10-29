@@ -70,12 +70,12 @@ const ProfilePage: React.FC = () => {
 
         const { data: imagesData } = await supabase
           .from('product_images')
-          .select('product_id, image_url')
+          .select('product_id, image_url, thumbnail_url')
           .in('product_id', productIds)
           .eq('seq', 1);
 
         const imageMap = new Map(
-          imagesData?.map(img => [img.product_id, img.image_url]) || []
+          imagesData?.map(img => [img.product_id, img.thumbnail_url || img.image_url]) || []
         );
 
         const ordersWithImages = ordersData.map(order => ({

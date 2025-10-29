@@ -511,8 +511,8 @@ const ProductsPage: React.FC = () => {
             <div key={product.id} className="p-6 bg-walnut-900 border border-walnut-800 rounded-lg hover:border-walnut-700 transition-colors">
               <div className="flex gap-6">
                 <div className="w-32 h-32 bg-walnut-800 rounded-lg overflow-hidden flex-shrink-0">
-                  {productImages[product.id]?.[0]?.image_url ? (
-                    <img src={productImages[product.id][0].image_url} alt={product.name} className="w-full h-full object-cover" />
+                  {productImages[product.id]?.[0]?.thumbnail_url || productImages[product.id]?.[0]?.image_url ? (
+                    <img src={productImages[product.id][0].thumbnail_url || productImages[product.id][0].image_url} alt={product.name} className="w-full h-full object-cover" />
                   ) : product.image_url ? (
                     <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
                   ) : (

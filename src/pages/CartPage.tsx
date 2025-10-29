@@ -64,7 +64,7 @@ const CartPage: React.FC = () => {
     const productIds = cart.map(item => item.id);
     const { data, error } = await supabase
       .from('product_images')
-      .select('product_id, image_url')
+      .select('product_id, image_url, thumbnail_url')
       .in('product_id', productIds)
       .eq('seq', 1);
 
@@ -75,7 +75,7 @@ const CartPage: React.FC = () => {
 
     const imageMap: Record<string, string> = {};
     data?.forEach((img: ProductImage) => {
-      imageMap[img.product_id] = img.image_url;
+      imageMap[img.product_id] = img.thumbnail_url || img.image_url;
     });
     setProductImages(imageMap);
   };
