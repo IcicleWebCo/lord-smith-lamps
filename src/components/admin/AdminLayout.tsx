@@ -20,9 +20,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentSection, onN
 
   const menuItems = [
     { id: 'dashboard' as const, label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'orders' as const, label: 'Orders', icon: ShoppingCart },
     { id: 'products' as const, label: 'Products', icon: Package },
     { id: 'categories' as const, label: 'Categories', icon: FolderTree },
-    { id: 'orders' as const, label: 'Orders', icon: ShoppingCart },
     { id: 'subscriptions' as const, label: 'Subscriptions', icon: Mail },
   ];
 
