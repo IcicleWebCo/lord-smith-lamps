@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Flame, ShoppingBag, Settings, LogOut, Sparkles, ArrowRight } from 'lucide-react';
+import { Flame, ShoppingBag, Settings, LogOut, Sparkles, ArrowRight, MapPin } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useAdmin } from '../context/AdminContext';
 import { signOut, supabase } from '../lib/supabase';
 import OrderHistory from '../components/profile/OrderHistory';
 import AccountSettings from '../components/profile/AccountSettings';
+import AddressManagement from '../components/profile/AddressManagement';
 import OptimizedImage from '../components/OptimizedImage';
 
 interface OrderItem {
@@ -25,7 +26,7 @@ interface Order {
   order_items: OrderItem[];
 }
 
-type TabType = 'orders' | 'settings';
+type TabType = 'orders' | 'settings' | 'addresses';
 
 const ProfilePage: React.FC = () => {
   const { user, setUser, setCurrentPage } = useApp();
@@ -195,6 +196,18 @@ const ProfilePage: React.FC = () => {
                   <span>My Orders</span>
                   {activeTab === 'orders' && <ArrowRight className="h-4 w-4 ml-auto" />}
                 </button>
+                <button
+                  onClick={() => setActiveTab('addresses')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-300 mb-1 ${
+                    activeTab === 'addresses'
+                      ? 'bg-gradient-to-r from-forge-600 to-forge-500 text-parchment-50 shadow-forge'
+                      : 'text-parchment-300 hover:bg-walnut-800 hover:text-parchment-50'
+                  }`}
+                >
+                  <MapPin className="h-5 w-5" />
+                  <span>Addresses</span>
+                  {activeTab === 'addresses' && <ArrowRight className="h-4 w-4 ml-auto" />}
+                </button>
               </nav>
 
               <div className="p-4 border-t-2 border-walnut-800">
@@ -251,6 +264,19 @@ const ProfilePage: React.FC = () => {
                       </div>
                     </div>
                   )}
+                </>
+              ) : activeTab === 'addresses' ? (
+                <>
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-parchment-50 mb-2 font-display flex items-center gap-2">
+                      <MapPin className="h-6 w-6 text-ember-400" />
+                      Shipping Addresses
+                    </h2>
+                    <p className="text-parchment-400">
+                      Manage your delivery locations
+                    </p>
+                  </div>
+                  <AddressManagement userId={user.id} />
                 </>
               ) : (
                 <>
