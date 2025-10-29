@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Package, FolderTree, Star, Mail } from 'lucide-react';
-import { getProducts, getCategories, getSubscriptionCount } from '../../lib/admin';
+import { Package, FolderTree, Star, Mail, Truck } from 'lucide-react';
+import { getProducts, getCategories, getSubscriptionCount, getOrders } from '../../lib/admin';
 
 const DashboardPage: React.FC = () => {
   const [stats, setStats] = useState({
@@ -8,6 +8,7 @@ const DashboardPage: React.FC = () => {
     featuredProducts: 0,
     totalCategories: 0,
     activeSubscriptions: 0,
+    unshippedOrders: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -17,10 +18,11 @@ const DashboardPage: React.FC = () => {
 
   const loadStats = async () => {
     setLoading(true);
-    const [products, categories, subscriptionCount] = await Promise.all([
+    const [products, categories, subscriptionCount, orders] = await Promise.all([
       getProducts(),
       getCategories(),
-      getSubscriptionCount()
+      getSubscriptionCount(),
+      getOrders()
     ]);
 
     setStats({
@@ -28,6 +30,7 @@ const DashboardPage: React.FC = () => {
       featuredProducts: products.filter(p => p.featured).length,
       totalCategories: categories.length,
       activeSubscriptions: subscriptionCount,
+      unshippedOrders: orders.filter(o => !o.shipped).length,
     });
     setLoading(false);
   };
@@ -56,6 +59,12 @@ const DashboardPage: React.FC = () => {
       value: stats.activeSubscriptions,
       icon: Mail,
       color: 'from-patina-600 to-patina-700',
+    },
+    {
+      title: 'Unshipped Orders',
+      value: stats.unshippedOrders,
+      icon: Truck,
+      color: 'from-ember-600 to-forge-700',
     },
   ];
 
