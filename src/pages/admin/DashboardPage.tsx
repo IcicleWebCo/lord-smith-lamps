@@ -54,18 +54,6 @@ const DashboardPage: React.FC = () => {
       icon: Mail,
       color: 'from-patina-600 to-patina-700',
     },
-    {
-      title: 'Total Products',
-      value: stats.totalProducts,
-      icon: Package,
-      color: 'from-forge-600 to-ember-700',
-    },
-    {
-      title: 'Categories',
-      value: stats.totalCategories,
-      icon: FolderTree,
-      color: 'from-timber-600 to-walnut-700',
-    },
   ];
 
   if (loading) {
