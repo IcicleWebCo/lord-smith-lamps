@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Package, FolderTree, LogOut, Mail, ShoppingCart } from 'lucide-react';
+import { LayoutDashboard, Package, FolderTree, LogOut, Mail, ShoppingCart, Store } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useApp } from '../../context/AppContext';
 
@@ -56,7 +56,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentSection, onN
           })}
         </nav>
 
-        <div className="absolute bottom-0 w-64 p-4 border-t border-walnut-800">
+        <div className="absolute bottom-0 w-64 p-4 border-t border-walnut-800 space-y-2">
+          <button
+            onClick={() => setCurrentPage('home')}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-parchment-300 hover:bg-walnut-800 hover:text-parchment-50 transition-all duration-200"
+          >
+            <Store className="h-5 w-5" />
+            <span className="font-medium">Back to Shop</span>
+          </button>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-parchment-300 hover:bg-walnut-800 hover:text-parchment-50 transition-all duration-200"
