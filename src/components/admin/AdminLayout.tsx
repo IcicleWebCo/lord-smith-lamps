@@ -62,7 +62,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentSection, onN
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-parchment-300 hover:bg-walnut-800 hover:text-parchment-50 transition-all duration-200"
           >
             <Store className="h-5 w-5" />
-            <span className="font-medium">Back to Shop</span>
+            <span className="font-medium">Exit Admin Panel</span>
           </button>
           <button
             onClick={handleLogout}
