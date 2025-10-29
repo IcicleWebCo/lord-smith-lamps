@@ -15,6 +15,8 @@ interface Order {
   id: string;
   order_date: string;
   total_amount: number;
+  tax_amount: number;
+  shipping_amount: number;
   status: string;
   order_items: OrderItem[];
 }
@@ -139,6 +141,33 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ orders, loading }) => {
                   </div>
                 </div>
               ))}
+
+              <div className="border-t border-walnut-700 pt-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-parchment-400">Items Subtotal</span>
+                  <span className="text-parchment-50 font-semibold">
+                    {formatPrice(order.order_items.reduce((sum, item) => sum + item.subtotal, 0))}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-parchment-400">Shipping</span>
+                  <span className="text-parchment-50 font-semibold">
+                    {formatPrice(order.shipping_amount)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-parchment-400">Tax</span>
+                  <span className="text-parchment-50 font-semibold">
+                    {formatPrice(order.tax_amount)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-base font-bold pt-2 border-t border-walnut-700">
+                  <span className="text-parchment-50">Order Total</span>
+                  <span className="text-ember-400">
+                    {formatPrice(order.total_amount)}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

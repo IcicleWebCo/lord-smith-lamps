@@ -22,6 +22,8 @@ interface Order {
   id: string;
   order_date: string;
   total_amount: number;
+  tax_amount: number;
+  shipping_amount: number;
   status: string;
   order_items: OrderItem[];
 }
@@ -50,6 +52,8 @@ const ProfilePage: React.FC = () => {
           id,
           order_date,
           total_amount,
+          tax_amount,
+          shipping_amount,
           status,
           order_items (
             id,
