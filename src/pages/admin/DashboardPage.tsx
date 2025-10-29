@@ -116,7 +116,7 @@ const DashboardPage: React.FC = () => {
             <div className="flex justify-between items-center p-4 bg-walnut-800 rounded-lg">
               <span className="text-parchment-300 font-medium">Product Sales</span>
               <span className="text-2xl font-bold text-parchment-50">
-                ${stats.totalSubtotal.toFixed(2)}
+                ${(stats.totalSubtotal ?? 0.00).toFixed(2)}
               </span>
             </div>
 
