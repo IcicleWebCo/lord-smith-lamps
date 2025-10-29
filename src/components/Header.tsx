@@ -59,16 +59,6 @@ const Header: React.FC = () => {
               Shop
             </button>
             <button
-              onClick={() => setCurrentPage('custom-work')}
-              className={`text-sm font-medium transition-colors duration-200 ${
-                currentPage === 'custom-work'
-                  ? 'text-ember-400 border-b-2 border-ember-400 pb-1'
-                  : 'text-parchment-300 hover:text-ember-300'
-              }`}
-            >
-              Custom Work
-            </button>
-            <button
               onClick={() => setCurrentPage('about')}
               className={`text-sm font-medium transition-colors duration-200 ${
                 currentPage === 'about'
@@ -77,6 +67,16 @@ const Header: React.FC = () => {
               }`}
             >
               Our Story
+            </button>
+            <button
+              onClick={() => setCurrentPage('custom-work')}
+              className={`text-sm font-medium transition-colors duration-200 ${
+                currentPage === 'custom-work'
+                  ? 'text-ember-400 border-b-2 border-ember-400 pb-1'
+                  : 'text-parchment-300 hover:text-ember-300'
+              }`}
+            >
+              Custom Work
             </button>
             <button
               onClick={() => setCurrentPage('contact')}
