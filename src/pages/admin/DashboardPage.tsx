@@ -43,6 +43,12 @@ const DashboardPage: React.FC = () => {
       color: 'from-ember-600 to-forge-700',
     },
     {
+      title: 'Featured Products',
+      value: stats.featuredProducts,
+      icon: Star,
+      color: 'from-gold-600 to-copper-700',
+    },
+    {
       title: 'Active Subscriptions',
       value: stats.activeSubscriptions,
       icon: Mail,
@@ -53,12 +59,6 @@ const DashboardPage: React.FC = () => {
       value: stats.totalProducts,
       icon: Package,
       color: 'from-forge-600 to-ember-700',
-    },
-    {
-      title: 'Featured Products',
-      value: stats.featuredProducts,
-      icon: Star,
-      color: 'from-gold-600 to-copper-700',
     },
     {
       title: 'Categories',
