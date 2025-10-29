@@ -106,13 +106,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </div>
           </>
         )}
-        {isOutOfStock && (
-          <div className="absolute inset-0 bg-soot-950/80 flex items-center justify-center">
-            <span className="text-parchment-300 font-semibold bg-soot-900 px-4 py-2 rounded-lg">
-              Out of Stock
-            </span>
-          </div>
-        )}
         {product.original_price && product.on_sale && (
           <div className="absolute top-4 left-4 bg-forge-600 text-parchment-50 px-3 py-1 rounded-full text-sm font-semibold">
             Sale
