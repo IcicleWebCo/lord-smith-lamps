@@ -24,7 +24,7 @@ const FeaturedProductsSection: React.FC = () => {
         category:categories(name)
       `)
       .eq('featured', true)
-      .eq('in_stock', true)
+      .gt('quantity', 0)
       .order('created_at', { ascending: false })
       .limit(6);
 

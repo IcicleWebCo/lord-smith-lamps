@@ -18,7 +18,6 @@ const ProductsPage: React.FC = () => {
     category_id: null,
     rating: 0,
     reviews: 0,
-    in_stock: true,
     quantity: 0,
     featured: false,
     on_sale: false,
@@ -274,7 +273,6 @@ const ProductsPage: React.FC = () => {
       category_id: null,
       rating: 0,
       reviews: 0,
-      in_stock: true,
       quantity: 0,
       featured: false,
       on_sale: false,
@@ -473,16 +471,7 @@ const ProductsPage: React.FC = () => {
                 </div>
               )}
             </div>
-            <div className="col-span-2 grid grid-cols-3 gap-4">
-              <label className="flex items-center gap-2 text-parchment-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.in_stock}
-                  onChange={(e) => setFormData({ ...formData, in_stock: e.target.checked })}
-                  className="rounded border-walnut-700 bg-walnut-800 text-forge-600 focus:ring-forge-500"
-                />
-                In Stock
-              </label>
+            <div className="col-span-2 grid grid-cols-2 gap-4">
               <label className="flex items-center gap-2 text-parchment-300 cursor-pointer">
                 <input
                   type="checkbox"
@@ -642,15 +631,6 @@ const ProductsPage: React.FC = () => {
                         <label className="flex items-center gap-2 text-parchment-300 cursor-pointer">
                           <input
                             type="checkbox"
-                            checked={product.in_stock}
-                            onChange={(e) => updateProductField(product.id, 'in_stock', e.target.checked)}
-                            className="rounded border-walnut-700 bg-walnut-800 text-forge-600 focus:ring-forge-500"
-                          />
-                          In Stock
-                        </label>
-                        <label className="flex items-center gap-2 text-parchment-300 cursor-pointer">
-                          <input
-                            type="checkbox"
                             checked={product.featured}
                             onChange={(e) => updateProductField(product.id, 'featured', e.target.checked)}
                             className="rounded border-walnut-700 bg-walnut-800 text-forge-600 focus:ring-forge-500"
@@ -687,8 +667,8 @@ const ProductsPage: React.FC = () => {
                               On Sale
                             </span>
                           )}
-                          <span className={`px-2 py-1 text-xs rounded ${product.in_stock ? 'bg-patina-900 text-patina-300' : 'bg-walnut-800 text-parchment-400'}`}>
-                            {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                          <span className={`px-2 py-1 text-xs rounded ${product.quantity > 0 ? 'bg-patina-900 text-patina-300' : 'bg-walnut-800 text-parchment-400'}`}>
+                            {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
                           </span>
                         </div>
                       </div>

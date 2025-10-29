@@ -75,8 +75,10 @@ const ProductsPage: React.FC = () => {
     })
     .sort((a, b) => {
       // First sort by stock status (in stock first)
-      if (a.in_stock && !b.in_stock) return -1;
-      if (!a.in_stock && b.in_stock) return 1;
+      const aInStock = a.quantity > 0;
+      const bInStock = b.quantity > 0;
+      if (aInStock && !bInStock) return -1;
+      if (!aInStock && bInStock) return 1;
 
       // Then sort by selected criteria
       switch (sortBy) {
