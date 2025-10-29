@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Star, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, Heart, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Product } from '../types';
 import { useApp } from '../context/AppContext';
 import { supabase } from '../lib/supabase';
@@ -22,6 +22,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [images, setImages] = useState<ProductImage[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   const isFavorited = favorites.includes(product.id);
 
@@ -56,6 +57,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
+  const handleImageClick = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleModalPrevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleModalNextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
   const currentImage = images.length > 0 ? images[currentImageIndex].image_url : null;
   const hasMultipleImages = images.length > 1;
   const isOutOfStock = product.quantity === 0;
@@ -65,15 +84,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   }
 
   return (
-    <div className="bg-walnut-900 rounded-xl overflow-hidden shadow-craft hover:shadow-forge transition-all duration-300 group">
-      <div className="relative">
-        <OptimizedImage
-          src={currentImage}
-          alt={product.name}
-          className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-          priority={false}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
+    <>
+      <div className="bg-walnut-900 rounded-xl overflow-hidden shadow-craft hover:shadow-forge transition-all duration-300 group">
+        <div className="relative cursor-pointer" onClick={handleImageClick}>
+          <OptimizedImage
+            src={currentImage}
+            alt={product.name}
+            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+            priority={false}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
         {hasMultipleImages && (
           <>
             <button
@@ -163,6 +183,69 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </button>
       </div>
     </div>
+
+    {showModal && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-soot-950/95 p-4"
+        onClick={handleCloseModal}
+      >
+        <button
+          onClick={handleCloseModal}
+          className="absolute top-4 right-4 p-2 bg-walnut-800/80 text-parchment-50 rounded-full hover:bg-walnut-700 transition-colors z-10"
+        >
+          <X className="h-6 w-6" />
+        </button>
+
+        <div className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+          <img
+            src={currentImage}
+            alt={product.name}
+            className="max-w-full max-h-full object-contain rounded-lg"
+          />
+
+          {hasMultipleImages && (
+            <>
+              <button
+                onClick={handleModalPrevImage}
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-walnut-800/90 text-parchment-50 rounded-full hover:bg-walnut-700 transition-all"
+              >
+                <ChevronLeft className="h-8 w-8" />
+              </button>
+              <button
+                onClick={handleModalNextImage}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-walnut-800/90 text-parchment-50 rounded-full hover:bg-walnut-700 transition-all"
+              >
+                <ChevronRight className="h-8 w-8" />
+              </button>
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 bg-walnut-800/90 px-4 py-2 rounded-full">
+                {images.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentImageIndex(index);
+                    }}
+                    className={`h-2.5 rounded-full transition-all ${
+                      index === currentImageIndex
+                        ? 'w-8 bg-ember-400'
+                        : 'w-2.5 bg-parchment-300/50 hover:bg-parchment-300'
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="absolute bottom-8 left-8 bg-walnut-800/90 px-4 py-2 rounded-lg">
+            <h3 className="text-lg font-bold text-parchment-50">{product.name}</h3>
+            <p className="text-sm text-parchment-300">
+              {currentImageIndex + 1} / {images.length}
+            </p>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 
