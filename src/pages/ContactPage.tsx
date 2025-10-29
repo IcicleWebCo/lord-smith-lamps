@@ -132,8 +132,6 @@ const ContactPage: React.FC = () => {
             <p className="text-parchment-300 text-sm leading-relaxed">
               Mon - Sat: 10:00 AM - 5:00 PM
               <br />Sunday: 10:00 AM - 4:00 PM
-              <br />
-              <span className="text-parchment-400 text-xs italic mt-2 block">We respond within 24 hours</span>
             </p>
           </div>
 
