@@ -90,6 +90,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="bg-walnut-900 rounded-xl overflow-hidden shadow-craft hover:shadow-forge transition-all duration-300 group">
         <div className="relative cursor-pointer" onClick={handleImageClick}>
           <OptimizedImage
+            // using currentImage here. the thumbnails are not of great quality.
+            // to revert: change currentImage back to currentThumbnail
             src={currentImage}
             alt={product.name}
             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
