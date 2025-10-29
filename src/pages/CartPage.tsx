@@ -33,8 +33,24 @@ const CartPage: React.FC = () => {
 
   useEffect(() => {
     loadDefaultImages();
-    loadShippingAddresses();
   }, [cart]);
+
+  useEffect(() => {
+    loadShippingAddresses();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        loadShippingAddresses();
+      } else if (event === 'SIGNED_OUT') {
+        setShippingAddresses([]);
+        setSelectedAddressId(null);
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   const loadShippingAddresses = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -55,6 +71,8 @@ const CartPage: React.FC = () => {
     const defaultAddress = data?.find(addr => addr.is_default);
     if (defaultAddress) {
       setSelectedAddressId(defaultAddress.id);
+    } else if (data && data.length > 0) {
+      setSelectedAddressId(data[0].id);
     }
   };
 
