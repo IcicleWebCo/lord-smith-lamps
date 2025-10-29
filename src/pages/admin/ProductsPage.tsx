@@ -36,6 +36,8 @@ const ProductsPage: React.FC = () => {
   const [editPriceInputs, setEditPriceInputs] = useState<{ [key: string]: string }>({});
   const [editOriginalPriceInputs, setEditOriginalPriceInputs] = useState<{ [key: string]: string }>({});
   const [editShippingPriceInputs, setEditShippingPriceInputs] = useState<{ [key: string]: string }>({});
+  const [newProductImages, setNewProductImages] = useState<File[]>([]);
+  const [newProductImagePreviews, setNewProductImagePreviews] = useState<string[]>([]);
 
   useEffect(() => {
     loadData();
@@ -181,7 +183,22 @@ const ProductsPage: React.FC = () => {
 
     try {
       setError(null);
-      await createProduct(formData as Omit<ProductDB, 'id' | 'created_at' | 'updated_at'>);
+      const newProduct = await createProduct(formData as Omit<ProductDB, 'id' | 'created_at' | 'updated_at'>);
+
+      if (newProduct && newProductImages.length > 0) {
+        for (let i = 0; i < newProductImages.length; i++) {
+          const file = newProductImages[i];
+          const imageUrl = await uploadProductImage(file);
+
+          await createProductImage({
+            product_id: newProduct.id,
+            image_url: imageUrl,
+            seq: i + 1,
+            alt_text: file.name,
+          });
+        }
+      }
+
       await loadData();
       resetForm();
       setShowAddForm(false);
@@ -222,6 +239,26 @@ const ProductsPage: React.FC = () => {
     ));
   };
 
+  const handleNewProductImageSelect = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    setNewProductImages(prev => [...prev, ...fileArray]);
+
+    fileArray.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewProductImagePreviews(prev => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemoveNewProductImage = (index: number) => {
+    setNewProductImages(prev => prev.filter((_, i) => i !== index));
+    setNewProductImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -242,6 +279,8 @@ const ProductsPage: React.FC = () => {
     setPriceInput('');
     setOriginalPriceInput('');
     setShippingPriceInput('');
+    setNewProductImages([]);
+    setNewProductImagePreviews([]);
   };
 
   const getCategoryName = (categoryId: string | null) => {
@@ -372,6 +411,39 @@ const ProductsPage: React.FC = () => {
                 className="w-full px-4 py-2 bg-walnut-800 border border-walnut-700 rounded-lg text-parchment-100 focus:outline-none focus:ring-2 focus:ring-forge-500"
                 rows={3}
               />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-parchment-300 mb-2">Product Images</label>
+              <label className="flex items-center justify-center gap-2 px-4 py-3 bg-walnut-800 border-2 border-dashed border-walnut-600 rounded-lg cursor-pointer hover:border-forge-500 hover:bg-walnut-750 transition-colors">
+                <Upload className="h-5 w-5 text-parchment-400" />
+                <span className="text-parchment-300">Upload Images</span>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => handleNewProductImageSelect(e.target.files)}
+                  className="hidden"
+                />
+              </label>
+              {newProductImagePreviews.length > 0 && (
+                <div className="mt-4 grid grid-cols-4 gap-4">
+                  {newProductImagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group bg-walnut-800 rounded-lg overflow-hidden">
+                      <img src={preview} alt={`Preview ${index + 1}`} className="w-full h-32 object-cover" />
+                      <button
+                        onClick={() => handleRemoveNewProductImage(index)}
+                        className="absolute inset-0 bg-soot-950/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                        title="Remove"
+                      >
+                        <X className="h-6 w-6 text-forge-400" />
+                      </button>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-soot-950 to-transparent p-2">
+                        <span className="text-xs text-parchment-300">Image {index + 1}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="col-span-2 grid grid-cols-3 gap-4">
               <label className="flex items-center gap-2 text-parchment-300 cursor-pointer">
