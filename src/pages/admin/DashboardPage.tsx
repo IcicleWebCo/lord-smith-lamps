@@ -123,14 +123,14 @@ const DashboardPage: React.FC = () => {
             <div className="flex justify-between items-center p-4 bg-walnut-800 rounded-lg">
               <span className="text-parchment-300 font-medium">Tax Collected</span>
               <span className="text-xl font-semibold text-ember-400">
-                ${stats.totalTax.toFixed(2)}
+                ${(stats.totalTax ?? 0.00).toFixed(2)}
               </span>
             </div>
 
             <div className="flex justify-between items-center p-4 bg-walnut-800 rounded-lg">
               <span className="text-parchment-300 font-medium">Shipping Revenue</span>
               <span className="text-xl font-semibold text-patina-400">
-                ${stats.totalShipping.toFixed(2)}
+                ${(stats.totalShipping ?? 0).toFixed(2)}
               </span>
             </div>
           </div>
@@ -139,20 +139,20 @@ const DashboardPage: React.FC = () => {
             <div className="w-full p-8 bg-gradient-to-br from-walnut-800 to-walnut-700 rounded-lg border-2 border-patina-600">
               <p className="text-sm text-parchment-400 mb-2 text-center">Total Revenue</p>
               <p className="text-4xl font-bold text-patina-400 text-center">
-                ${stats.totalSales.toFixed(2)}
+                ${(stats.totalSales ?? 0.00).toFixed(2)}
               </p>
               <div className="mt-4 pt-4 border-t border-walnut-600 space-y-1">
                 <div className="flex justify-between text-sm">
                   <span className="text-parchment-400">Subtotal:</span>
-                  <span className="text-parchment-300">${stats.totalSubtotal.toFixed(2)}</span>
+                  <span className="text-parchment-300">${(stats.totalSubtotal ?? 0.00).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-parchment-400">Tax:</span>
-                  <span className="text-parchment-300">${stats.totalTax.toFixed(2)}</span>
+                  <span className="text-parchment-300">${(stats.totalTax ?? 0.00).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-parchment-400">Shipping:</span>
-                  <span className="text-parchment-300">${stats.totalShipping.toFixed(2)}</span>
+                  <span className="text-parchment-300">${(stats.totalShipping ?? 0.00).toFixed(2)}</span>
                 </div>
               </div>
             </div>
