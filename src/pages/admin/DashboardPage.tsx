@@ -102,29 +102,6 @@ const DashboardPage: React.FC = () => {
           );
         })}
       </div>
-
-      <div className="bg-walnut-900 border border-walnut-800 rounded-lg p-6">
-        <h2 className="text-xl font-bold text-parchment-50 mb-4">Quick Actions</h2>
-        <p className="text-parchment-300 mb-4">
-          Use the navigation menu on the left to manage your products and categories.
-        </p>
-        <div className="flex gap-3">
-          <div className="flex-1 p-4 bg-walnut-800 rounded-lg border border-walnut-700">
-            <Package className="h-8 w-8 text-forge-400 mb-2" />
-            <h3 className="text-lg font-semibold text-parchment-50 mb-1">Products</h3>
-            <p className="text-sm text-parchment-400">
-              Add, edit, or remove products from your catalog
-            </p>
-          </div>
-          <div className="flex-1 p-4 bg-walnut-800 rounded-lg border border-walnut-700">
-            <FolderTree className="h-8 w-8 text-timber-400 mb-2" />
-            <h3 className="text-lg font-semibold text-parchment-50 mb-1">Categories</h3>
-            <p className="text-sm text-parchment-400">
-              Organize products into categories
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
