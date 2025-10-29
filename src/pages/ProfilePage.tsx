@@ -66,6 +66,7 @@ const ProfilePage: React.FC = () => {
             subtotal
           )
         `)
+        .eq('user_id', user!.id)
         .order('order_date', { ascending: false });
 
       if (error) throw error;
