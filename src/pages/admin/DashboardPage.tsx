@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, FolderTree, Star, Mail, Truck } from 'lucide-react';
+import { Package, FolderTree, Star, Mail, Truck, DollarSign } from 'lucide-react';
 import { getProducts, getCategories, getSubscriptionCount, getOrders } from '../../lib/admin';
 
 const DashboardPage: React.FC = () => {
