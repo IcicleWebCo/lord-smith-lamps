@@ -189,7 +189,41 @@ export async function updateProduct(id: string, updates: Partial<ProductDB>): Pr
   return data;
 }
 
+function extractStoragePath(imageUrl: string): string | null {
+  const urlParts = imageUrl.split('/');
+  const bucketIndex = urlParts.findIndex(part => part === 'Product%20Images' || part === 'Product Images');
+
+  if (bucketIndex !== -1 && bucketIndex < urlParts.length - 1) {
+    const filePath = urlParts.slice(bucketIndex + 1).join('/');
+    return decodeURIComponent(filePath);
+  }
+
+  return null;
+}
+
+async function deleteImageFromStorage(imageUrl: string): Promise<void> {
+  const storagePath = extractStoragePath(imageUrl);
+
+  if (storagePath) {
+    const { error } = await supabase.storage
+      .from('Product Images')
+      .remove([storagePath]);
+
+    if (error) {
+      console.error('Error deleting image from storage:', error);
+    }
+  }
+}
+
 export async function deleteProduct(id: string): Promise<void> {
+  const images = await getProductImages(id);
+
+  for (const image of images) {
+    if (image.image_url) {
+      await deleteImageFromStorage(image.image_url);
+    }
+  }
+
   const { error } = await supabase
     .from('products')
     .delete()
@@ -197,6 +231,9 @@ export async function deleteProduct(id: string): Promise<void> {
 
   if (error) {
     console.error('Error deleting product:', error);
+    if (error.code === '23503') {
+      throw new Error('Cannot delete product: it has been ordered by customers. Products with existing orders cannot be deleted.');
+    }
     throw error;
   }
 }
@@ -321,6 +358,21 @@ export async function updateProductImage(id: string, updates: Partial<ProductIma
 }
 
 export async function deleteProductImage(id: string): Promise<void> {
+  const { data: image, error: fetchError } = await supabase
+    .from('product_images')
+    .select('image_url')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (fetchError) {
+    console.error('Error fetching product image:', fetchError);
+    throw fetchError;
+  }
+
+  if (image?.image_url) {
+    await deleteImageFromStorage(image.image_url);
+  }
+
   const { error } = await supabase
     .from('product_images')
     .delete()
