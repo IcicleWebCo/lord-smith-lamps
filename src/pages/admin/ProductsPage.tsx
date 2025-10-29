@@ -38,6 +38,8 @@ const ProductsPage: React.FC = () => {
   const [editShippingPriceInputs, setEditShippingPriceInputs] = useState<{ [key: string]: string }>({});
   const [newProductImages, setNewProductImages] = useState<File[]>([]);
   const [newProductImagePreviews, setNewProductImagePreviews] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   useEffect(() => {
     loadData();
@@ -291,6 +293,30 @@ const ProductsPage: React.FC = () => {
     return category?.name || 'Unknown';
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -507,7 +533,7 @@ const ProductsPage: React.FC = () => {
             <p className="text-parchment-400">No products yet. Create your first product to get started.</p>
           </div>
         ) : (
-          products.map((product) => (
+          currentProducts.map((product) => (
             <div key={product.id} className="p-6 bg-walnut-900 border border-walnut-800 rounded-lg hover:border-walnut-700 transition-colors">
               <div className="flex gap-6">
                 <div className="w-32 h-32 bg-walnut-800 rounded-lg overflow-hidden flex-shrink-0">
@@ -818,6 +844,45 @@ const ProductsPage: React.FC = () => {
           ))
         )}
       </div>
+
+      {products.length > itemsPerPage && (
+        <div className="mt-8 flex items-center justify-between">
+          <div className="text-parchment-300 text-sm">
+            Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, products.length)} of {products.length} products
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={goToPreviousPage}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-walnut-800 text-parchment-300 rounded-lg hover:bg-walnut-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <div className="flex gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => goToPage(page)}
+                  className={`px-3 py-2 rounded-lg transition-colors ${
+                    currentPage === page
+                      ? 'bg-forge-600 text-parchment-50'
+                      : 'bg-walnut-800 text-parchment-300 hover:bg-walnut-700'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-walnut-800 text-parchment-300 rounded-lg hover:bg-walnut-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
