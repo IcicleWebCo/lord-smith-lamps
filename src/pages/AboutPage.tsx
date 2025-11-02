@@ -64,7 +64,7 @@ const AboutPage: React.FC = () => {
                   After carrying these cherished companions for over five decades, our founder, Tim Smith, felt a different calling for them. What started as a creative spark – transforming these iconic cameras into unique lamps as heartfelt Christmas gifts – quickly ignited into something much larger.
                 </p>
                 <p>
-                  The true turning point came on a seemingly ordinary New Year's Day. A casual conversation at Inta Vintage in Sumner led to an unexpected offer: "You should sell these!" Lord Smith laughed it off, but the shop owner's persistence was a testament to the lamps' undeniable charm. After weeks of calls, a space was set up on March 15, 2021, and the rest, as they say, is history in the making.
+                  The true turning point came on a seemingly ordinary New Year's Day. A casual conversation at a vintage store in Sumner led to an unexpected offer: "You should sell these!" Lord Smith laughed it off, but the shop owner's persistence was a testament to the lamps' undeniable charm. After weeks of calls, a space was set up on March 15, 2021, and the rest, as they say, is history in the making.
                 </p>
                 <p>
 Over 500 lamps later, the original vision remains: to discover beautiful, discarded objects that have outlived their original purpose and infuse them with new light and life. From antique cameras to forgotten industrial pieces, each Lord Smith lamp is a handcrafted statement, a unique conversation starter that beautifully bridges the past and the present.
