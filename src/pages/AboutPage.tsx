@@ -61,7 +61,7 @@ const AboutPage: React.FC = () => {
                   Every object holds a story, a whisper of a life once lived. At Lord Smith, we believe some stories deserve to shine a little brighter. Our journey began not in a workshop, but in a lifetime of memories, tucked away in boxes: a collection of vintage cameras that had faithfully documented adventures since the 1970s.
                 </p>
                 <p>
-                  After carrying these cherished companions for over five decades, our founder, Lord Smith, felt a different calling for them. What started as a creative spark – transforming these iconic cameras into unique lamps as heartfelt Christmas gifts – quickly ignited into something much larger.
+                  After carrying these cherished companions for over five decades, our founder, Tim Smith, felt a different calling for them. What started as a creative spark – transforming these iconic cameras into unique lamps as heartfelt Christmas gifts – quickly ignited into something much larger.
                 </p>
                 <p>
                   The true turning point came on a seemingly ordinary New Year's Day. A casual conversation at Inta Vintage in Sumner led to an unexpected offer: "You should sell these!" Lord Smith laughed it off, but the shop owner's persistence was a testament to the lamps' undeniable charm. After weeks of calls, a space was set up on March 15, 2021, and the rest, as they say, is history in the making.
