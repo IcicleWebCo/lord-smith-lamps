@@ -111,8 +111,8 @@ const ContactPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 mb-12">
-          <div className="bg-walnut-900 rounded-xl p-6 border-2 border-walnut-800 hover:border-forge-600 transition-all duration-300 shadow-craft">
+        <div className="grid lg:grid-cols-2 gap-8 mb-12">
+          {/*<div className="bg-walnut-900 rounded-xl p-6 border-2 border-walnut-800 hover:border-forge-600 transition-all duration-300 shadow-craft">
             <div className="bg-gradient-to-br from-forge-900 to-ember-900 p-3 rounded-lg w-fit mb-4">
               <MapPin className="h-6 w-6 text-ember-400" />
             </div>
@@ -122,7 +122,7 @@ const ContactPage: React.FC = () => {
               <br />1109 Main Street
               <br />Sumner, WA 98390
             </p>
-          </div>
+          </div>*/}
 
           <div className="bg-walnut-900 rounded-xl p-6 border-2 border-walnut-800 hover:border-forge-600 transition-all duration-300 shadow-craft">
             <div className="bg-gradient-to-br from-forge-900 to-ember-900 p-3 rounded-lg w-fit mb-4">
