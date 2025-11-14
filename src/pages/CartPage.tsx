@@ -33,7 +33,7 @@ const CartPage: React.FC = () => {
 
   useEffect(() => {
     loadDefaultImages();
-  }, [cart]);
+  }, [cart.length]);
 
   useEffect(() => {
     loadShippingAddresses();
