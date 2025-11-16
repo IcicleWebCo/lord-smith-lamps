@@ -13,7 +13,12 @@ interface ContactFormData {
 }
 
 Deno.serve(async (req: Request) => {
+  console.log('[send-contact-email] Function invoked');
+  console.log('[send-contact-email] Request method:', req.method);
+  console.log('[send-contact-email] Request URL:', req.url);
+
   if (req.method === "OPTIONS") {
+    console.log('[send-contact-email] Handling OPTIONS preflight request');
     return new Response(null, {
       status: 200,
       headers: corsHeaders,
@@ -21,9 +26,12 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    console.log('[send-contact-email] Parsing request body');
     const { name, email, message }: ContactFormData = await req.json();
+    console.log('[send-contact-email] Received data:', { name, email, messageLength: message?.length });
 
     if (!name || !email || !message) {
+      console.warn('[send-contact-email] Missing required fields:', { hasName: !!name, hasEmail: !!email, hasMessage: !!message });
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         {
@@ -94,10 +102,11 @@ Sent from Lord Smith Lamps Contact Form
       `,
     };
 
+    console.log('[send-contact-email] Checking for RESEND_API_KEY');
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
     if (!RESEND_API_KEY) {
-      console.error("RESEND_API_KEY not configured");
+      console.error('[send-contact-email] RESEND_API_KEY not configured');
       return new Response(
         JSON.stringify({ error: "Email service not configured" }),
         {
@@ -109,27 +118,42 @@ Sent from Lord Smith Lamps Contact Form
         }
       );
     }
+    console.log('[send-contact-email] RESEND_API_KEY found');
 
+    const emailPayload = {
+      from: "Lord Smith Lamps <noreply@lordsmithlamps.com>",
+      to: emailContent.to,
+      subject: emailContent.subject,
+      html: emailContent.html,
+      text: emailContent.text,
+    };
+    console.log('[send-contact-email] Preparing email payload:', {
+      from: emailPayload.from,
+      to: emailPayload.to,
+      subject: emailPayload.subject,
+      htmlLength: emailPayload.html.length,
+      textLength: emailPayload.text.length
+    });
+
+    console.log('[send-contact-email] Calling Resend API...');
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify({
-        from: "Lord Smith Lamps <noreply@lordsmithlamps.com>",
-        to: emailContent.to,
-        subject: emailContent.subject,
-        html: emailContent.html,
-        text: emailContent.text,
-      }),
+      body: JSON.stringify(emailPayload),
     });
+
+    console.log('[send-contact-email] Resend API response status:', resendResponse.status);
+    console.log('[send-contact-email] Resend API response ok:', resendResponse.ok);
 
     if (!resendResponse.ok) {
       const errorText = await resendResponse.text();
-      console.error("Resend API error:", errorText);
+      console.error('[send-contact-email] Resend API error status:', resendResponse.status);
+      console.error('[send-contact-email] Resend API error response:', errorText);
       return new Response(
-        JSON.stringify({ error: "Failed to send email" }),
+        JSON.stringify({ error: "Failed to send email", details: errorText }),
         {
           status: 500,
           headers: {
@@ -140,8 +164,12 @@ Sent from Lord Smith Lamps Contact Form
       );
     }
 
+    const resendData = await resendResponse.json();
+    console.log('[send-contact-email] Resend API success response:', resendData);
+
+    console.log('[send-contact-email] Email sent successfully');
     return new Response(
-      JSON.stringify({ success: true, message: "Email sent successfully" }),
+      JSON.stringify({ success: true, message: "Email sent successfully", emailId: resendData.id }),
       {
         status: 200,
         headers: {
@@ -151,9 +179,15 @@ Sent from Lord Smith Lamps Contact Form
       }
     );
   } catch (error) {
-    console.error("Error:", error);
+    console.error('[send-contact-email] Caught error:', error);
+    console.error('[send-contact-email] Error type:', error?.constructor?.name);
+    console.error('[send-contact-email] Error message:', error instanceof Error ? error.message : String(error));
+    console.error('[send-contact-email] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({
+        error: "Internal server error",
+        message: error instanceof Error ? error.message : String(error)
+      }),
       {
         status: 500,
         headers: {

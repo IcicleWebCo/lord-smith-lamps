@@ -24,53 +24,79 @@ const ContactPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[ContactForm] Form submission started');
 
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      console.warn('[ContactForm] Validation failed: missing fields');
       setStatus('error');
       setMessage('Please fill in all fields.');
       return;
     }
 
     if (!formData.email.includes('@')) {
+      console.warn('[ContactForm] Validation failed: invalid email');
       setStatus('error');
       setMessage('Please enter a valid email address.');
       return;
     }
 
+    console.log('[ContactForm] Validation passed, submitting form data');
     setStatus('loading');
     setMessage('');
 
     try {
+      console.log('[ContactForm] Calling submitContactForm to save to database');
       await submitContactForm({
         name: formData.name.trim(),
         email: formData.email.trim(),
         message: formData.message.trim()
       });
+      console.log('[ContactForm] Successfully saved to database');
 
       const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`;
+      console.log('[ContactForm] Preparing to call edge function:', apiUrl);
+
       const headers = {
         'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json',
       };
 
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        message: formData.message.trim()
+      };
+      console.log('[ContactForm] Payload:', payload);
+
+      console.log('[ContactForm] Calling edge function...');
       const emailResponse = await fetch(apiUrl, {
         method: 'POST',
         headers,
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          message: formData.message.trim()
-        })
+        body: JSON.stringify(payload)
       });
 
+      console.log('[ContactForm] Edge function response status:', emailResponse.status);
+      console.log('[ContactForm] Edge function response ok:', emailResponse.ok);
+
       if (!emailResponse.ok) {
-        console.error('Failed to send email notification');
+        const errorText = await emailResponse.text();
+        console.error('[ContactForm] Edge function failed with status:', emailResponse.status);
+        console.error('[ContactForm] Edge function error response:', errorText);
+      } else {
+        const responseData = await emailResponse.json();
+        console.log('[ContactForm] Edge function success response:', responseData);
       }
 
+      console.log('[ContactForm] Form submission completed successfully');
       setStatus('success');
       setMessage('Thank you for your message! We\'ll get back to you within 24 hours.');
       setFormData({ name: '', email: '', message: '' });
     } catch (error) {
+      console.error('[ContactForm] Error during form submission:', error);
+      console.error('[ContactForm] Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
       setStatus('error');
       setMessage(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     }
