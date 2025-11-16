@@ -102,14 +102,23 @@ export const submitContactForm = async (formData: {
   email: string;
   message: string;
 }) => {
+  console.log('[submitContactForm] Starting insert with data:', formData);
+
   const { data, error } = await supabase
     .from('contact_submissions')
     .insert([formData])
     .select();
 
   if (error) {
-    throw new Error('Failed to submit your message. Please try again.');
+    console.error('[submitContactForm] Supabase error:', {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code
+    });
+    throw new Error(error.message || 'Failed to submit your message. Please try again.');
   }
 
+  console.log('[submitContactForm] Insert successful:', data);
   return data;
 };
