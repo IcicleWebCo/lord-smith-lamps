@@ -110,7 +110,7 @@ Sent from Lord Smith Lamps Contact Form
     }
 
     const emailPayload = {
-      from: "Lord Smith Lamps <noreply@lordsmithlamps.com>",
+      from: "Lord Smith Lamps <tim@lordsmithlamps.com>",
       to: emailContent.to,
       subject: emailContent.subject,
       html: emailContent.html,
