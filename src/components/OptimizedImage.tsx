@@ -33,7 +33,6 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   }, [src, onLoad]);
 
   const getCacheKey = (url: string) => {
-    console.log(url);
     const urlObj = new URL(url);
     return `${urlObj.pathname}-${urlObj.searchParams.toString()}`;
   };
