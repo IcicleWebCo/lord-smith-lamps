@@ -37,7 +37,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const emailContent = {
-      to: "info@lordsmithlamps.com",
+      to: "tim@lordsmithlamps.com",
       subject: `New Contact Form Submission from ${name}`,
       html: `
         <!DOCTYPE html>
