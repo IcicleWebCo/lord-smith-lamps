@@ -142,7 +142,7 @@ const ContactPage: React.FC = () => {
             <p className="text-parchment-300 text-sm leading-relaxed">
               <a href="tel:1-253-204-0509" className="text-forge-400 hover:text-forge-300 transition-colors">(253) 204-0509</a>
               <br />
-              <a href="mailto:info@lordsmithlamps.com" className="text-forge-400 hover:text-forge-300 transition-colors">info@lordsmithlamps.com</a>
+              <a href="mailto:tim@lordsmithlamps.com" className="text-forge-400 hover:text-forge-300 transition-colors">tim@lordsmithlamps.com</a>
             </p>
           </div>
         </div>
