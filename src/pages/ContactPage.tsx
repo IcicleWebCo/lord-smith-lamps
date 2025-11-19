@@ -287,7 +287,7 @@ const ContactPage: React.FC = () => {
             </div>
 
             <div className="bg-walnut-900 rounded-xl border-2 border-walnut-800 p-6 shadow-craft">
-              <h4 className="font-bold text-parchment-50 mb-3 font-display">Why Choose Lordsmith Lamps?</h4>
+              <h4 className="font-bold text-parchment-50 mb-3 font-display">Why Choose Lord Smith Lamps?</h4>
               <ul className="space-y-2 text-parchment-300 text-sm">
                 <li className="flex items-start gap-2">
                   <span className="text-ember-400 mt-0.5">•</span>
