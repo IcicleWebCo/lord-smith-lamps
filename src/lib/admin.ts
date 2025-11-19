@@ -38,9 +38,7 @@ export interface ProductDB {
 }
 
 export async function checkIsAdmin(): Promise<boolean> {
-  console.log('checking for admin');
   const { data: { user } } = await supabase.auth.getUser();
-  console.log(user);
   if (!user) return false;
 
   const { data, error } = await supabase
@@ -48,7 +46,6 @@ export async function checkIsAdmin(): Promise<boolean> {
     .select('is_admin')
     .eq('user_id', user.id)
     .maybeSingle();
-  console.log(data);
   if (error || !data) return false;
 
   return data.is_admin;
