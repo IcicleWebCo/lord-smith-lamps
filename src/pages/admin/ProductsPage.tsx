@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Edit2, Trash2, Save, X, Star, Package, Upload, Image as ImageIcon, GripVertical } from 'lucide-react';
-import { getProducts, getCategories, createProduct, updateProduct, deleteProduct, ProductDB, Category, getProductImages, createProductImage, deleteProductImage, updateProductImage, uploadProductImage, ProductImage } from '../../lib/admin';
+import { getProducts, getCategories, createProduct, updateProduct, deleteProduct, ProductDB, Category, getProductImages, createProductImage, deleteProductImage, updateProductImage, uploadProductImage, ProductImage } from '../../lib/admin/';
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<ProductDB[]>([]);

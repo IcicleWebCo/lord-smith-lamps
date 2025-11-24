@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { checkIsAdmin, getUserRole, UserRole } from '../lib/admin';
+import { checkIsAdmin, getUserRole, UserRole } from '../lib/admin/';
 import { useApp } from './AppContext';
 
 interface AdminContextType {

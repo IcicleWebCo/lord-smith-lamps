@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Truck, Calendar, User, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
-import { getOrders, toggleOrderShipped, getUserEmailByOrderId, type OrderWithDetails } from '../../lib/admin';
+import { getOrders, toggleOrderShipped, getUserEmailByOrderId, type OrderWithDetails } from '../../lib/admin/';
 import TrackingModal from '../../components/admin/TrackingModal';
 
 const OrdersPage: React.FC = () => {

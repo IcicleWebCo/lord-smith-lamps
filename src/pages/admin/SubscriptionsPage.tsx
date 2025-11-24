@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, CheckCircle, XCircle, Search, Trash2, Calendar, Copy, Check } from 'lucide-react';
-import { getSubscriptions, updateSubscription, deleteSubscription, NewsletterSubscription } from '../../lib/admin';
+import { getSubscriptions, updateSubscription, deleteSubscription, NewsletterSubscription } from '../../lib/admin/';
 
 const SubscriptionsPage: React.FC = () => {
   const [subscriptions, setSubscriptions] = useState<NewsletterSubscription[]>([]);

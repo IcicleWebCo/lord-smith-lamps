@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
-import { getCategories, createCategory, updateCategory, deleteCategory, Category } from '../../lib/admin';
+import { getCategories, createCategory, updateCategory, deleteCategory, Category } from '../../lib/admin/';
 
 const CategoriesPage: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
