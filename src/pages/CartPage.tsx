@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import { supabase } from '../lib/supabase';
 import AuthModal from '../components/AuthModal';
 import { ShippingAddress } from '../types';
+import { CHECKOUT_ENABLED } from '../lib/config';
 
 interface ProductImage {
   product_id: string;
@@ -250,28 +251,30 @@ const CartPage: React.FC = () => {
             Shopping Cart
           </h1>
 
-          <div className="bg-gradient-to-r from-ember-900/50 to-forge-900/50 border-2 border-ember-600 rounded-xl p-6 mb-8">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <AlertCircle className="h-6 w-6 text-ember-400" />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-lg font-bold text-parchment-50 mb-2 font-display">
-                  Checkout Temporarily Unavailable
-                </h2>
-                <p className="text-parchment-300 mb-4">
-                  We apologize for the inconvenience. We are currently updating our payment system and will be able to accept payments soon. Your items will remain in your cart.
-                </p>
-                <button
-                  onClick={() => setCurrentPage('contact')}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-ember-600 hover:bg-ember-700 text-parchment-50 rounded-lg font-semibold transition-all duration-300"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  Contact Us for Assistance
-                </button>
+          {!CHECKOUT_ENABLED && (
+            <div className="bg-gradient-to-r from-ember-900/50 to-forge-900/50 border-2 border-ember-600 rounded-xl p-6 mb-8">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <AlertCircle className="h-6 w-6 text-ember-400" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-lg font-bold text-parchment-50 mb-2 font-display">
+                    Checkout Temporarily Unavailable
+                  </h2>
+                  <p className="text-parchment-300 mb-4">
+                    We apologize for the inconvenience. We are currently updating our payment system and will be able to accept payments soon. Your items will remain in your cart.
+                  </p>
+                  <button
+                    onClick={() => setCurrentPage('contact')}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-ember-600 hover:bg-ember-700 text-parchment-50 rounded-lg font-semibold transition-all duration-300"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    Contact Us for Assistance
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="space-y-6">
             <div className="bg-walnut-900 rounded-xl p-6">
@@ -344,7 +347,7 @@ const CartPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-walnut-900 rounded-xl p-6 opacity-50 pointer-events-none">
+            <div className={`bg-walnut-900 rounded-xl p-6 ${!CHECKOUT_ENABLED ? 'opacity-50 pointer-events-none' : ''}`}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-5 w-5 text-ember-400" />
@@ -599,13 +602,23 @@ const CartPage: React.FC = () => {
               >
                 Continue Shopping
               </button>
-              
-              <button
-                disabled
-                className="flex-1 py-3 bg-walnut-700 text-parchment-400 rounded-lg font-semibold cursor-not-allowed opacity-50"
-              >
-                Checkout Temporarily Unavailable
-              </button>
+
+              {CHECKOUT_ENABLED ? (
+                <button
+                  onClick={handleCheckout}
+                  disabled={loading || !selectedAddressId}
+                  className="flex-1 py-3 bg-gradient-to-r from-ember-600 to-ember-500 text-parchment-50 rounded-lg font-semibold hover:from-ember-700 hover:to-ember-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Processing...' : 'Proceed to Checkout'}
+                </button>
+              ) : (
+                <button
+                  disabled
+                  className="flex-1 py-3 bg-walnut-700 text-parchment-400 rounded-lg font-semibold cursor-not-allowed opacity-50"
+                >
+                  Checkout Temporarily Unavailable
+                </button>
+              )}
             </div>
             </div>
           </div>
