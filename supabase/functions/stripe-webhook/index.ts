@@ -104,6 +104,15 @@ Deno.serve(async (req: Request) => {
         const taxAmount = session.metadata?.tax ? parseFloat(session.metadata.tax) : 0;
         const shippingAmount = session.metadata?.shipping ? parseFloat(session.metadata.shipping) : 0;
 
+        let cartItems: CartItem[] = [];
+        if (session.metadata?.cart_items) {
+          try {
+            cartItems = JSON.parse(session.metadata.cart_items);
+          } catch (e) {
+            console.error("Error parsing cart_items from metadata:", e);
+          }
+        }
+
         const { data: order, error: orderError } = await supabase
           .from("orders")
           .insert({
@@ -124,30 +133,28 @@ Deno.serve(async (req: Request) => {
           throw new Error("Failed to create order");
         }
 
-        for (const item of lineItems.data) {
-          const productName = typeof item.price?.product === "object" 
-            ? item.price.product.name 
-            : "Unknown Product";
-          const unitAmount = item.price?.unit_amount ? item.price.unit_amount / 100 : 0;
-          const quantity = item.quantity || 1;
-          const subtotal = unitAmount * quantity;
+        for (const cartItem of cartItems) {
+          const { data: productData } = await supabase
+            .from("products")
+            .select("name, price")
+            .eq("id", cartItem.product_id)
+            .single();
 
-          let productId: string | null = null;
-          
-          if (typeof item.price?.product === "object" && item.price.product.metadata) {
-            productId = item.price.product.metadata.product_id || null;
-          }
-
-          if (!productId) {
-            console.warn("No product_id found in line item metadata");
+          if (!productData) {
+            console.warn(`Product not found: ${cartItem.product_id}`);
             continue;
           }
+
+          const productName = productData.name;
+          const unitAmount = productData.price;
+          const quantity = cartItem.quantity;
+          const subtotal = unitAmount * quantity;
 
           const { error: itemError } = await supabase
             .from("order_items")
             .insert({
               order_id: order.id,
-              product_id: productId,
+              product_id: cartItem.product_id,
               product_name: productName,
               product_price: unitAmount,
               quantity: quantity,
@@ -161,7 +168,7 @@ Deno.serve(async (req: Request) => {
           const { data: product } = await supabase
             .from("products")
             .select("quantity")
-            .eq("id", productId)
+            .eq("id", cartItem.product_id)
             .single();
 
           if (product && product.quantity >= quantity) {
@@ -169,13 +176,15 @@ Deno.serve(async (req: Request) => {
             const { error: updateError } = await supabase
               .from("products")
               .update({ quantity: newQuantity })
-              .eq("id", productId);
+              .eq("id", cartItem.product_id);
 
             if (updateError) {
               console.error("Error updating product quantity:", updateError);
+            } else {
+              console.log(`Updated product ${cartItem.product_id} quantity: ${product.quantity} -> ${newQuantity}`);
             }
           } else {
-            console.warn(`Insufficient inventory for product ${productId}`);
+            console.warn(`Insufficient inventory for product ${cartItem.product_id}`);
           }
         }
 
