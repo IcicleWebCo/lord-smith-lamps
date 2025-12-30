@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowRight, Hammer } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import OptimizedImage from './OptimizedImage';
+import YouTubeLite from './YouTubeLite';
 
 const HeroSection: React.FC = () => {
   const { setCurrentPage } = useApp();
@@ -35,7 +36,7 @@ const HeroSection: React.FC = () => {
               Discover one-of-a-kind lamps, handcrafted from vintage cameras, classic hardware, and other forgotten treasures.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <button
                 onClick={() => setCurrentPage('products')}
                 className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-forge-600 to-forge-500 text-parchment-50 font-semibold rounded-lg hover:from-forge-700 hover:to-forge-600 transition-all duration-300 shadow-forge hover:shadow-lg group"
@@ -50,6 +51,14 @@ const HeroSection: React.FC = () => {
               >
                 Our Story
               </button>
+            </div>
+
+            <div className="max-w-2xl animate-fade-in-up">
+              <YouTubeLite
+                videoId="OAinPVn8CnI"
+                title="Watch how we craft our unique lamps"
+                className="border-2 border-ember-500/20 hover:border-ember-500/40 transition-all duration-300"
+              />
             </div>
           </div>
         </div>

@@ -206,6 +206,7 @@ export default {
       animation: {
         'flicker': 'flicker 2s ease-in-out infinite alternate',
         'glow': 'glow 2s ease-in-out infinite alternate',
+        'fade-in-up': 'fade-in-up 0.8s ease-out',
       },
       keyframes: {
         flicker: {
@@ -216,6 +217,10 @@ export default {
         glow: {
           '0%': { boxShadow: '0 0 5px rgba(249, 115, 22, 0.5)' },
           '100%': { boxShadow: '0 0 20px rgba(249, 115, 22, 0.8)' },
+        },
+        'fade-in-up': {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
     },
