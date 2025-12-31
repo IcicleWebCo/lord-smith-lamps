@@ -91,7 +91,7 @@ const YouTubeLite: React.FC<YouTubeLiteProps> = ({
             onFocus={preconnect}
             onKeyPress={handleKeyPress}
             aria-label="Play video"
-            className="absolute inset-0 w-full h-full flex items-center justify-center group cursor-pointer focus:outline-none focus:ring-4 focus:ring-forge-500/50 rounded-xl"
+            className="absolute inset-0 w-full h-full flex items-center justify-center group cursor-pointer "
           >
             <div
               className={`relative transition-all duration-500 ease-out ${
