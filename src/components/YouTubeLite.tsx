@@ -97,23 +97,6 @@ const YouTubeLite: React.FC<YouTubeLiteProps> = ({
             aria-label="Play video"
             className="absolute inset-0 w-full h-full flex items-center justify-center group cursor-pointer focus:outline-none focus:ring-4 focus:ring-forge-500/50 rounded-xl"
           >
-            <div
-              className={`relative transition-all duration-500 ease-out ${
-                isHovered ? 'scale-110' : 'scale-100'
-              }`}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-forge-600 to-ember-500 rounded-full blur-2xl opacity-60 animate-pulse" />
-
-              <div className="relative w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-r from-forge-600 to-forge-500 rounded-full flex items-center justify-center shadow-forge transition-all duration-300">
-                <Play
-                  className={`w-8 h-8 sm:w-10 sm:h-10 text-parchment-50 fill-parchment-50 transition-transform duration-300 ${
-                    isHovered ? 'translate-x-1' : 'translate-x-0.5'
-                  }`}
-                  strokeWidth={1.5}
-                />
-              </div>
-            </div>
-
             <div className="absolute bottom-6 left-6 right-6">
               <div className="inline-flex items-center px-4 py-2 bg-soot-950/80 backdrop-blur-sm rounded-lg border border-ember-500/30">
                 <Play className="w-4 h-4 text-ember-400 mr-2" />
