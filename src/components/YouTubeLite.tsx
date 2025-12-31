@@ -60,8 +60,11 @@ const YouTubeLite: React.FC<YouTubeLiteProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden rounded-xl shadow-2xl transition-all duration-500 ${className}`}
-      style={{ paddingBottom: '56.25%' }}
+      className={`relative w-full overflow-hidden rounded-xl transition-all duration-500 ${className}`}
+      style={{
+        paddingBottom: '56.25%',
+        boxShadow: '0 25px 50px -12px rgba(249, 115, 22, 0.25), 0 0 0 1px rgba(249, 115, 22, 0.1)'
+      }}
     >
       {!isActivated ? (
         <>
@@ -127,7 +130,7 @@ const YouTubeLite: React.FC<YouTubeLiteProps> = ({
           )}
           <iframe
             ref={iframeRef}
-            className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${
+            className={`absolute inset-0 w-full h-full transition-opacity duration-500 border-0 ${
               isLoading ? 'opacity-0' : 'opacity-100'
             }`}
             src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&color=white`}
