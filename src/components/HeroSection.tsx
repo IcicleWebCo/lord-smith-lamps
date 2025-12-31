@@ -57,7 +57,7 @@ const HeroSection: React.FC = () => {
               <YouTubeLite
                 videoId="OAinPVn8CnI"
                 title="Watch how we craft our unique lamps"
-                className="border-2 border-forge-500/30 hover:border-forge-500/60 transition-all duration-300"
+                className=""
               />
             </div>
           </div>
