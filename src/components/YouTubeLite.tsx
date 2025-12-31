@@ -97,11 +97,9 @@ const YouTubeLite: React.FC<YouTubeLiteProps> = ({
             aria-label="Play video"
             className="absolute inset-0 w-full h-full flex items-center justify-center group cursor-pointer focus:outline-none focus:ring-4 focus:ring-forge-500/50 rounded-xl"
           >
-            <div className="absolute bottom-6 left-6 right-6">
-              <div className="inline-flex items-center px-4 py-2 bg-soot-950/80 backdrop-blur-sm rounded-lg border border-ember-500/30">
-                <Play className="w-4 h-4 text-ember-400 mr-2" />
-                <span className="text-parchment-100 text-sm font-medium">Watch Video</span>
-              </div>
+            <div className="inline-flex items-center px-4 py-2 bg-soot-950/80 backdrop-blur-sm rounded-lg border border-ember-500/30 transition-transform duration-300">
+              <Play className="w-4 h-4 text-ember-400 mr-2" />
+              <span className="text-parchment-100 text-sm font-medium">Watch Video</span>
             </div>
           </button>
         </>
