@@ -78,7 +78,7 @@ const YouTubeLite: React.FC<YouTubeLiteProps> = ({
           <div
             className={`absolute inset-0 bg-gradient-to-t from-soot-950/90 via-soot-950/40 to-transparent transition-opacity duration-500 ${
               isHovered ? 'opacity-70' : 'opacity-50'
-            }`} 
+            }`}
           />
 
           <button
