@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface YouTubeLiteProps {
   videoId: string;
@@ -18,7 +19,7 @@ const YouTubeLite: React.FC<YouTubeLiteProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+  const thumbnailUrl = supabase.storage.from('site').getPublicUrl('videothumbnail.jpg').data.publicUrl;
 
   const preconnect = () => {
     if (!isActivated) {
