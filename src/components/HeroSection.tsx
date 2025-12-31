@@ -2,7 +2,6 @@ import React from 'react';
 import { ArrowRight, Hammer } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import OptimizedImage from './OptimizedImage';
-import YouTubeLite from './YouTubeLite';
 
 const HeroSection: React.FC = () => {
   const { setCurrentPage } = useApp();
@@ -54,10 +53,11 @@ const HeroSection: React.FC = () => {
             </div>
 
             <div className="max-w-2xl animate-fade-in-up">
-              <YouTubeLite
-                videoId="OAinPVn8CnI"
-                title="Watch how we craft our unique lamps"
-                className=""
+              <OptimizedImage
+                src="https://qknudtdodpkwamafbnnz.supabase.co/storage/v1/object/public/site/videothumbnail.jpg"
+                alt="Watch how we craft our unique lamps"
+                className="rounded-lg shadow-2xl"
+                sizes="(max-width: 768px) 100vw, 672px"
               />
             </div>
           </div>
